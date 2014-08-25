@@ -3,9 +3,9 @@
 	Author: Peter Hague
 	Created: 20/07/14
 */
-#include "include/chain.h"
-#include "include/options.h"
-#include "include/pick.h"
+#include "include/chain.hpp"
+#include "include/options.hpp"
+#include "include/pick.hpp"
 
 chain::chain(uint32_t l, uint16_t w) {
 	length = l;

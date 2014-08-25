@@ -9,8 +9,8 @@
 #include <iostream>
 #include <cinttypes>
 
-#include "include/options.h"
-#include "include/defaults.h"
+#include "include/options.hpp"
+#include "include/defaults.hpp"
 
 using namespace std;
 

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#include "include/agent.h"
+#include "include/agent.hpp"
 
 using namespace std;
 

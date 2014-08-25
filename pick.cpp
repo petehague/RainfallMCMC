@@ -7,7 +7,7 @@
 #include <chrono>
 #include <random>
 
-#include "include/pick.h"
+#include "include/pick.hpp"
 
 using namespace std;
 

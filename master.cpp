@@ -6,9 +6,9 @@
 #include <iostream>
 #include <vector>
 #include <dlfcn.h>
-#include "include/agent.h"
-#include "include/chain.h"
-#include "include/options.h"
+#include "include/agent.hpp"
+#include "include/chain.hpp"
+#include "include/options.hpp"
 
 using namespace std;
 
