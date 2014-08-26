@@ -1,3 +1,8 @@
+/*
+	Histogram agent
+	Author: Peter Hague
+	Created: 26/08/14
+*/
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -5,7 +10,8 @@
 
 #include <cinttypes>
 
-#include "include/histogram.h"
+#include "include/histogram.hpp"
+#include "include/agent.hpp"
 
 using namespace std;
 
@@ -41,6 +47,16 @@ void histogram::incbin(double data) {
     data /= dx;
     i = (int)floor(data);
     count[i]++;
+  }
+}
+
+void histogram::exbin(double data) {
+  int i;
+  if (data>=x0 && data<=x1) {
+    data -= x0;
+    data /= dx;
+    i = (int)floor(data);
+    count[i]--;
   }
 }
 
@@ -95,3 +111,19 @@ double histogram::peak() {
 
   return x0+(dx/2)+dx*(double)maxi;
 }
+
+class plothist : public agent {
+public:
+	plothist(chain *c, options *o); 
+	int status() const { return 4; }
+	void invoke(chain *c, options *o);
+};
+
+plothist::plothist(chain *c, options *o) : agent(c,o) {
+	//Intantiate histogram for each parameter in the chain
+}
+
+void plothist::invoke(chain *c, options *o) {
+}
+
+REGISTERAGENT(plothist)

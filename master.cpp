@@ -20,7 +20,7 @@ int errMessage(int e) {
 	return 1;
 }
 
-int pushAgent(string agentName, vector <void *> *fStack, vector<agent *> *aStack, vector<clean_agent *> *cStack) {
+int pushAgent(string agentName, vector <void *> *fStack, vector<agent *> *aStack, vector<clean_agent *> *cStack, chain *c, options *o) {
     void *agentFile;
 	cout << "Loading " << agentName << endl;
 	agentFile = dlopen(agentName.c_str(), RTLD_LAZY);
@@ -33,7 +33,7 @@ int pushAgent(string agentName, vector <void *> *fStack, vector<agent *> *aStack
 	cStack->push_back((clean_agent*) dlsym(agentFile, "clean"));
 	if (dlerror()) return err_noclean;
 	
-    aStack->push_back(agentSpawner());
+    aStack->push_back(agentSpawner(c, o));
 	fStack->push_back(agentFile);
     
     return 0;
@@ -59,11 +59,11 @@ int main(int argc, char **argv) {
 	c.setup(o.getdoubleval("MaxModels"), o.getdoubleval("NParams"));
 	
 	//Load in estimator
-	pushAgent(o.getstringval("Estimator"), &fileStack, &agentStack, &cleanStack);
+	pushAgent(o.getstringval("Estimator"), &fileStack, &agentStack, &cleanStack, &c, &o);
 
 	//Load in all agents
 	for (int i=0;i<o.keycount("Agent");i++) {
-    	int result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack);
+    	int result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
     	if (result!=0) return errMessage(result);
 	}
 	

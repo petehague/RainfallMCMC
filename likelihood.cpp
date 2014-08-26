@@ -12,7 +12,7 @@ using namespace std;
 
 class likelihood : public agent {
 public:
-	likelihood () {
+	likelihood (chain *c, options *o) : agent(c, o) {
 		std::cout << "Created object" << std::endl;
 	}
 	int status() const { return 4; }

@@ -6,7 +6,7 @@
 
 class agent {
 public:
-    agent() {}
+    agent(chain *c, options *o) {}
     virtual ~agent() { }
     virtual int status() const { return 0; }
     virtual void invoke(chain *c, options *o) { }
@@ -18,7 +18,7 @@ typedef void clean_agent(agent*);
 
 // Registration macro - to be included at the end of all agent files
 #define REGISTERAGENT(AGENTNAME) \
-	extern "C" agent* spawn() { return new AGENTNAME; } \
+	extern "C" agent* spawn(chain *c, options *o) { return new AGENTNAME(c,o); } \
 	extern "C" void clean(agent* a) { delete a; }
 
 #endif
