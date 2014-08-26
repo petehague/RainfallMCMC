@@ -1,6 +1,6 @@
 MYCPP := g++ -g -std=c++11 -fPIC
 
-all: rainfall mods
+all: folders rainfall mods
 	@echo Make complete
 
 mods: mod/likelihood.so
@@ -24,6 +24,13 @@ bin/options.o: options.cpp
 	
 mod/likelihood.so: likelihood.cpp chain.cpp
 	$(MYCPP) -shared -ldl likelihood.cpp chain.cpp -omod/likelihood.so
+	
+mod/histogram.so: histogram.cpp chain.cpp
+	$(MYCPP) -shared -ldl histogram.cpp chain.cpp -omod/histogram.so
+
+folders:
+	mkdir -p bin
+	mkdir -p mod
 
 clean:	
 	rm rainfall

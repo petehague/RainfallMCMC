@@ -1,3 +1,8 @@
+/*
+	Histogram agent
+	Author: Peter Hague
+	Created: 26/08/14
+*/
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -5,7 +10,8 @@
 
 #include <cinttypes>
 
-#include "include/histogram.h"
+#include "include/histogram.hpp"
+#include "include/agent.hpp"
 
 using namespace std;
 
