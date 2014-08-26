@@ -1,4 +1,4 @@
-MYCPP := g++ -g -std=c++11 -stdlib=libc++
+MYCPP := g++ -g -std=c++11
 
 all: rainfall mods
 	@echo Make complete
