@@ -21,7 +21,7 @@ generator::generator(unsigned x){
  lnum=0;
   for (int burnum=0; burnum < 100000; burnum++){
   burn =g1();
-}
+  }
 }
 
 double generator::getnum(){
@@ -46,5 +46,19 @@ for(int i=0; i < n; i+=2){
   output[i] = cos(piiv)*rootv;
   output[i+1] = sin(piiv)*rootv;
 }
+}
+
+generator::generator(){
+
+}
+
+void generator::initialize(unsigned x){
+ unsigned seed = chrono::system_clock::now().time_since_epoch().count()*x;
+ unsigned burn;
+ g1.seed(seed);
+ lnum=0;
+  for (int burnum=0; burnum < 100000; burnum++){
+  burn =g1();
+  }
 }
 

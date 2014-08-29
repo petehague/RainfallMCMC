@@ -1,4 +1,4 @@
-Add alternate constructors for random number generator
+Add alternate constructors for random number generator EF
 	Implement random initialisation points and stepping. 
 	
 Create a "flat" likelihood function for testing
