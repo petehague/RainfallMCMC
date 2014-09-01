@@ -33,7 +33,7 @@ int pushAgent(string agentName, vector <void *> *fStack, vector<agent *> *aStack
 	cStack->push_back((clean_agent*) dlsym(agentFile, "clean"));
 	if (dlerror()) return err_noclean;
 	
-    aStack->push_back(agentSpawner(c, o));
+    aStack->push_back(agentSpawner());
 	fStack->push_back(agentFile);
     
     return 0;
@@ -58,8 +58,8 @@ int main(int argc, char **argv) {
 	
 	c.setup(o.getdoubleval("MaxModels"), o.getdoubleval("NParams"));
 	
-	//Load in estimator
-	pushAgent(o.getstringval("Estimator"), &fileStack, &agentStack, &cleanStack, &c, &o);
+	//Load in likelihood function
+	pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
 
 	//Load in all agents
 	for (int i=0;i<o.keycount("Agent");i++) {

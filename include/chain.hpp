@@ -20,7 +20,7 @@ class chain {
 	uint32_t *stepSize;
 	double *startMean;
 	double *startDev;
-	//generator ransource;
+	generator ransource;
 public:
 	chain(uint32_t l, uint16_t w);
 	chain();

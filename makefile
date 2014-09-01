@@ -7,7 +7,7 @@ mods: mod/likelihood.so mod/histogram.so
 	@echo Modules complete
 
 rainfall: bin/master.o bin/chain.o bin/options.o bin/pick.o
-	$(MYCPP) -ldl bin/master.o bin/chain.o bin/options.o -orainfall
+	$(MYCPP) -ldl bin/master.o bin/chain.o bin/options.o bin/pick.o -orainfall
 	@echo MCMC core code complete
 
 bin/master.o: master.cpp
@@ -22,11 +22,11 @@ bin/pick.o: pick.cpp
 bin/options.o: options.cpp
 	$(MYCPP) -c options.cpp -obin/options.o
 	
-mod/likelihood.so: likelihood.cpp chain.cpp
-	$(MYCPP) -shared -ldl likelihood.cpp chain.cpp -omod/likelihood.so
+mod/likelihood.so: likelihood.cpp chain.cpp pick.cpp
+	$(MYCPP) -shared -ldl likelihood.cpp chain.cpp pick.cpp -omod/likelihood.so
 	
-mod/histogram.so: histogram.cpp chain.cpp
-	$(MYCPP) -shared -ldl histogram.cpp chain.cpp -omod/histogram.so
+mod/histogram.so: histogram.cpp chain.cpp pick.cpp
+	$(MYCPP) -shared -ldl histogram.cpp chain.cpp pick.cpp -omod/histogram.so
 
 folders:
 	mkdir -p bin
