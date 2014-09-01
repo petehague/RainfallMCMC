@@ -7,6 +7,7 @@
 #include <cstring>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <cinttypes>
 
 #include "include/options.hpp"
@@ -173,27 +174,36 @@ void options::parse(string item) {
 	string *valstr;
 	
 	strcpy(c_item, item.c_str());
-	keyname = strtok(c_item, "=");
-	value = strtok(NULL, "=");
+	keyname = strtok(c_item, "= ");
+	if (keyname!=NULL && keyname[0]!='#') {
+		value = strtok(NULL, "= ");
 	
-	if (value==NULL) {
-		cout << "Key " << keyname << " cannot be assigned a value" << endl;
-	} 
-	
-	valstr = new string(value);
-	if (keycount(keyname)==0) {
-		if ((*valstr).find_first_not_of("0123456789+-.")==string::npos) 
-			addval(keyname, stod(*valstr), opt_noveto, opt_single);
-		else
-			addval(keyname, *valstr, opt_noveto, opt_single);
-	} else if (getrank(keyname)==opt_array) 
-		if (gettype(keyname)==opt_double) addval(keyname, stod(*valstr), opt_noveto, opt_array); else addval(keyname, *valstr, opt_noveto, opt_array);
-	else
-		if (gettype(keyname)==opt_double) setval(keyname, stod(*valstr)); else setval(keyname, *valstr);
-	delete valstr;
+		if (value==NULL) {
+			cout << "Using option file " << keyname << endl;
+			parseFile(keyname);
+		} else {	
+			valstr = new string(value);
+			if (keycount(keyname)==0) {
+				if ((*valstr).find_first_not_of("0123456789+-.")==string::npos) 
+					addval(keyname, stod(*valstr), opt_noveto, opt_single);
+				else
+					addval(keyname, *valstr, opt_noveto, opt_single);
+			} else if (getrank(keyname)==opt_array) 
+				if (gettype(keyname)==opt_double) addval(keyname, stod(*valstr), opt_noveto, opt_array); else addval(keyname, *valstr, opt_noveto, opt_array);
+			else
+				if (gettype(keyname)==opt_double) setval(keyname, stod(*valstr)); else setval(keyname, *valstr);
+			delete valstr;
+		}
+	}
 }
 
 void options::parseFile(string filename) {
+	fstream optfile;
+	
+	optfile.open(filename.c_str(), fstream::in);
+	//while(getline(optfile, buffer)) parse(buffer);
+	for (string line; getline(optfile, line); ) parse(line);
+	optfile.close();
 }
 
 void options::parseCL(int argc, char **argv) {
@@ -227,7 +237,5 @@ options::options() {
 }
 
 options::options(int argc, char **argv) {
-	if (argc>1)
-		for (int i=1;i<argc;i++) {
-		}
+	for (int i=1;i<argc;i++) parse(argv[i]);
 }

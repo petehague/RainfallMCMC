@@ -112,18 +112,20 @@ double histogram::peak() {
   return x0+(dx/2)+dx*(double)maxi;
 }
 
+//------------------------------------------------
+
 class plothist : public agent {
 public:
-	plothist(chain *c, options *o); 
+	plothist(); 
 	int status() const { return 4; }
-	void invoke(chain *c, options *o);
+	double invoke(chain *c, options *o);
 };
 
-plothist::plothist(chain *c, options *o) : agent(c,o) {
+plothist::plothist() {
 	//Intantiate histogram for each parameter in the chain
 }
 
-void plothist::invoke(chain *c, options *o) {
+double plothist::invoke(chain *c, options *o) {
 }
 
 REGISTERAGENT(plothist)

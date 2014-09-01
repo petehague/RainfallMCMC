@@ -12,14 +12,14 @@ using namespace std;
 
 class likelihood : public agent {
 public:
-	likelihood (chain *c, options *o) : agent(c, o) {
+	likelihood () {
 		std::cout << "Created object" << std::endl;
 	}
 	int status() const { return 4; }
-	void invoke(chain *c, options *o);
+	double invoke(chain *c, options *o);
 };
 
-void likelihood::invoke(chain *c, options *o) {
+double likelihood::invoke(chain *c, options *o) {
 	cout << c->size() << endl;
 }
 
