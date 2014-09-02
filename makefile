@@ -3,7 +3,7 @@ MYCPP := g++ -g -std=c++11 -fPIC
 all: folders rainfall mods
 	@echo Make complete
 
-mods: mod/likelihood.so mod/histogram.so
+mods: mod/likelihood.so mod/histogram.so mod/flat.so mod/blob.so
 	@echo Modules complete
 
 rainfall: bin/master.o bin/chain.o bin/options.o bin/pick.o
@@ -24,6 +24,12 @@ bin/options.o: options.cpp
 	
 mod/likelihood.so: likelihood.cpp chain.cpp pick.cpp
 	$(MYCPP) -shared -ldl likelihood.cpp chain.cpp pick.cpp -omod/likelihood.so
+
+mod/flat.so: flat.cpp chain.cpp pick.cpp
+	$(MYCPP) -shared -ldl flat.cpp chain.cpp pick.cpp -omod/flat.so
+
+mod/blob.so: blob.cpp chain.cpp pick.cpp
+	$(MYCPP) -shared -ldl blob.cpp chain.cpp pick.cpp -omod/flat.so
 	
 mod/histogram.so: histogram.cpp chain.cpp pick.cpp
 	$(MYCPP) -shared -ldl histogram.cpp chain.cpp pick.cpp -omod/histogram.so
