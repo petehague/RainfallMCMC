@@ -1,9 +1,0 @@
-Add alternate constructors for random number generator EF
-	Implement random initialisation points and stepping. 
-	
-Create a "flat" likelihood function for testing
-Create a "blot" likelihood function (randomly orientated prolate gaussian)
-Port histogram output from earlier code into agent file
-	Parse parameter file in R
-		Write R script to output parameters
-		
