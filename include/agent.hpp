@@ -9,7 +9,7 @@ public:
     agent() {}
     virtual ~agent() { }
     virtual int status() const { return 0; }
-    virtual double invoke(chain *c, options *o) { }
+    virtual double invoke(chain *c, options *o) { return 0.0; }
 };
 
 // the types of the class factories

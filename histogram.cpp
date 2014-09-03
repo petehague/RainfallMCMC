@@ -126,6 +126,7 @@ plothist::plothist() {
 }
 
 double plothist::invoke(chain *c, options *o) {
+	return 0.0;
 }
 
 REGISTERAGENT(plothist)

@@ -21,6 +21,7 @@ public:
 
 double likelihood::invoke(chain *c, options *o) {
 	cout << c->size() << endl;
+	return 1.0;
 }
 
 REGISTERAGENT(likelihood)
