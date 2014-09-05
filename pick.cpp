@@ -24,6 +24,10 @@ generator::generator(unsigned x){
   }
 }
 
+double generator::flatnum() {
+	return (double)g1()*lmaxresip;
+}
+
 double generator::getnum(){
  double use,piiv,rootv;
 lnum=1-lnum;

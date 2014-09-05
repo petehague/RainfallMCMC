@@ -14,7 +14,7 @@ public:
 	flat () {
 		std::cout << "flat created " << std::endl;
 	}
-	int status() const { return 4; }
+	void setup(options *o) { };
 	double invoke(chain *c, options *o);
 };
 

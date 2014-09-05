@@ -3,6 +3,7 @@
 	Author: Peter Hague
 	Created: 20/07/14
 */
+#include <algorithm>
 #include <string>
 #include <cstring>
 #include <vector>
@@ -19,6 +20,7 @@ using namespace std;
 //Appending a key and value to the list of options
 
 void options::addval(string k, double v, opt_vetostate m, opt_rank r) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	if (r==opt_array) arrayindex.push_back(keycount(k)); else arrayindex.push_back(0);
 	key.push_back(k);
 	double_val.push_back(v);
@@ -29,6 +31,7 @@ void options::addval(string k, double v, opt_vetostate m, opt_rank r) {
 }
 
 void options::addval(string k, string v, opt_vetostate m, opt_rank r) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	if (r==opt_array) arrayindex.push_back(keycount(k)); else arrayindex.push_back(0);
 	key.push_back(k);
 	double_val.push_back(0.0);
@@ -42,6 +45,7 @@ void options::addval(string k, string v, opt_vetostate m, opt_rank r) {
 //Setting the value of an already existing key
 
 void options::setval(string k, double v) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	while(k.compare(key[index])!=0) index++;
 	if (index<k.size()) {
@@ -51,6 +55,7 @@ void options::setval(string k, double v) {
 }
 
 void options::setval(string k, string v) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	while(k.compare(key[index])!=0) index++;
 	if (index<k.size()) {
@@ -60,18 +65,21 @@ void options::setval(string k, string v) {
 }
 
 opt_type options::gettype(string k) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	while(k.compare(key[index])!=0) index++;
 	return type[index];
 }
 
 opt_rank options::getrank(string k) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	while(k.compare(key[index])!=0) index++;
 	return rank[index];
 }
 
 void *options::getval(string k) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	while(k.compare(key[index])!=0) index++;
 	if (type[index]==opt_double) return &double_val[index];
@@ -79,12 +87,14 @@ void *options::getval(string k) {
 }
 
 double options::getdoubleval(string k) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	while(k.compare(key[index])!=0) index++;
 	return double_val[index];
 }
 
 string options::getstringval(string k) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	while(k.compare(key[index])!=0) index++;
 	return string_val[index];
@@ -94,6 +104,7 @@ string options::getstringval(string k) {
 //Setting the value of an array key
 
 bool options::setval(string k, int i, double v) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	for(i=i;i>0;i--)
 		while(k.compare(key[index])!=0) index++;
@@ -106,6 +117,7 @@ bool options::setval(string k, int i, double v) {
 }
 
 bool options::setval(string k, int i, string v) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	for(i=i;i>0;i--)
 		while(k.compare(key[index])!=0) index++;
@@ -118,6 +130,7 @@ bool options::setval(string k, int i, string v) {
 }
 
 void *options::getval(string k, int i) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	for(i=i;i>0;i--)
 		while(k.compare(key[index])!=0) index++;
@@ -128,6 +141,7 @@ void *options::getval(string k, int i) {
 }
 
 double options::getdoubleval(string k, int i) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	for(i=i;i>0;i--)
 		while(k.compare(key[index])!=0) index++;
@@ -136,6 +150,7 @@ double options::getdoubleval(string k, int i) {
 }
 
 string options::getstringval(string k, int i) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
 	for(i=i;i>0;i--)
 		while(k.compare(key[index])!=0) index++;
@@ -160,6 +175,7 @@ bool options::vetoCheck() {
 //--------------------------------------------------
 
 int options::keycount(string k) {
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int result = 0;
 	for (int i=0;i<key.size();i++)
 		if (k.compare(key[i])==0) result++;

@@ -27,15 +27,16 @@ public:
 		mean=0.5;
 		width=2*0.1*0.1;
 	}
-	int status() const { return 4; }
+	void setup(options *o) {
+		nparam=(int)o->getdoubleval("Nparams");
+		model=new double [nparam];
+	};
 	double invoke(chain *c, options *o);
 };
 
 double blob::invoke(chain *c, options *o){
 	double x, y;
 	int i;
-	nparam=(int)o->getdoubleval("Nparams");
-	model=new double [nparam];
 	x=1;
 	for (i=0; i < nparam; i++){
 	y=scale*exp(((x-mean)*(x-mean))/(width));
