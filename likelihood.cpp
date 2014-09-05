@@ -11,16 +11,20 @@
 using namespace std;
 
 class likelihood : public agent {
+	double *model;
 public:
 	likelihood () {
 		std::cout << "Created object" << std::endl;
 	}
-	void setup(options *o) { };
+	void setup(options *o);
 	double invoke(chain *c, options *o);
 };
 
+void likelihood::setup(options *o) {
+	model = new double[(int)o->getdoubleval("nparams")];
+}
+
 double likelihood::invoke(chain *c, options *o) {
-	double model[(int)o->getdoubleval("nparams")];
 	c->last(model);
 	return model[0]*model[0];
 }

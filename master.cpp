@@ -74,7 +74,8 @@ int main(int argc, char **argv) {
 	
 	//Load in likelihood function
 	pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
-
+    (agentStack.back())->setup(&o);
+    	
 	//Load in all agents
 	for (int i=0;i<o.keycount("Agent");i++) {
     	int result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
