@@ -188,12 +188,10 @@ void options::parse(string item) {
 	char c_item[item.size()];
 	char *keyname, *value;
 	string *valstr;
-	
 	strcpy(c_item, item.c_str());
 	keyname = strtok(c_item, "= ");
 	if (keyname!=NULL && keyname[0]!='#') {
 		value = strtok(NULL, "= ");
-	
 		if (value==NULL) {
 			cout << "Using option file " << keyname << endl;
 			parseFile(keyname);
