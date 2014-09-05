@@ -4,11 +4,14 @@
 	Created: 20/07/14
 */
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <dlfcn.h>
+
 #include "include/agent.hpp"
 #include "include/chain.hpp"
 #include "include/options.hpp"
+#include "include/pick.hpp"
 
 using namespace std;
 
@@ -45,7 +48,11 @@ int main(int argc, char **argv) {
 	vector<void *> fileStack;
 	options o;
 	chain c;
+	double *model;
 	int index = 0;
+	double oldlikelihood, newlikelihood;
+	generator ransource(42);
+	fstream output;
 	
 	o.parseCL(argc, argv);
 	
@@ -55,8 +62,15 @@ int main(int argc, char **argv) {
 	}
 	
 	o.report();
-	
-	c.setup(o.getdoubleval("MaxModels"), o.getdoubleval("NParams"));
+
+	model = new double[(uint16_t)o.getdoubleval("nparams")];
+	output.open(o.getstringval("outputfile"), fstream::out);
+	if (!output.is_open()) {
+		cout << "Can't open output file" << endl;
+		return 1;
+	}
+
+	c.init(&o);
 	
 	//Load in likelihood function
 	pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
@@ -65,11 +79,31 @@ int main(int argc, char **argv) {
 	for (int i=0;i<o.keycount("Agent");i++) {
     	int result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
     	if (result!=0) return errMessage(result);
+    	(agentStack.back())->setup(&o);
 	}
 	
+	oldlikelihood = agentStack[0]->invoke(&c, &o);
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
-		agentStack[0]->invoke(&c, &o);
-
+		c.step();
+		newlikelihood = agentStack[0]->invoke(&c, &o);
+		if (newlikelihood>oldlikelihood) {
+			c.push();
+			output << " " << newlikelihood;
+			oldlikelihood = newlikelihood;
+		} else {
+			if (ransource.flatnum()>(newlikelihood/oldlikelihood)) {
+				c.push();
+				output << " " << newlikelihood;
+				oldlikelihood = newlikelihood;
+			} else {
+				c.repeat();
+				output << " " << oldlikelihood;
+			}
+		}
+		c.last(model);
+		for(int j=0;j<o.getdoubleval("nparams");j++)
+			output << " " << model[j];
+		output << endl;
 	}
   
 	cout << "Unloading " << cleanStack.size() << " agents..." << endl;
@@ -79,4 +113,6 @@ int main(int argc, char **argv) {
 		cleanStack[agent_i](agentStack[agent_i]);
 		dlclose(fileStack[agent_i]);
 	}
+	
+	output.close();
 }

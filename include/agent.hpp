@@ -8,7 +8,7 @@ class agent {
 public:
     agent() {}
     virtual ~agent() { }
-    virtual int status() const { return 0; }
+    virtual void setup(options *o) { };
     virtual double invoke(chain *c, options *o) { return 0.0; }
 };
 
@@ -20,5 +20,4 @@ typedef void clean_agent(agent*);
 #define REGISTERAGENT(AGENTNAME) \
 	extern "C" agent* spawn() { return new AGENTNAME; } \
 	extern "C" void clean(agent* a) { delete a; }
-
 #endif

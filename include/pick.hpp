@@ -12,6 +12,7 @@ class generator{
 public:
   void getblock (double *output, int n);
   generator(unsigned x);
+  double flatnum();
   double getnum();
   generator();
   void initialize(unsigned x);

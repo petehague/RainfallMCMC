@@ -117,7 +117,7 @@ double histogram::peak() {
 class plothist : public agent {
 public:
 	plothist(); 
-	int status() const { return 4; }
+	void setup(options *o) { };
 	double invoke(chain *c, options *o);
 };
 
