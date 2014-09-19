@@ -86,17 +86,17 @@ int main(int argc, char **argv) {
 	oldlikelihood = agentStack[0]->invoke(&c, &o);
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
 		c.step();
+		c.push();
 		newlikelihood = agentStack[0]->invoke(&c, &o);
 		if (newlikelihood>oldlikelihood) {
-			c.push();
 			output << " " << newlikelihood;
 			oldlikelihood = newlikelihood;
 		} else {
 			if (ransource.flatnum()>(newlikelihood/oldlikelihood)) {
-				c.push();
 				output << " " << newlikelihood;
 				oldlikelihood = newlikelihood;
 			} else {
+				c.pop();
 				c.repeat();
 				output << " " << oldlikelihood;
 			}

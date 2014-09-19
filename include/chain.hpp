@@ -26,7 +26,9 @@ public:
 	void init(options *o);
 	void getModel(uint32_t index, double *output);
 	void last(double *output);
+	void rawlast(uint32_t *output);
 	void push();
+	void pop();
 	void step();
 	void repeat();
 	int size();

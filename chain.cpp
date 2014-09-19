@@ -28,6 +28,8 @@ void chain::init(options *o) {
 		p = startMean.back()+startDev.back()*ransource.getnum();
 		data.push_back((uint32_t)((p-rangeStart.back())/dRange.back()));
 		buffer.push_back(data[i]);
+		
+		std::cout << "Parameter " << i << ": " << rangeStart[i] << "+n*" << dRange[i] << std::endl;
 	}
 }
 
@@ -43,10 +45,18 @@ void chain::last(double *output) {
   		output[i] = rangeStart[i]+(double)data[pointer+i]*dRange[i];
 }
 
+void chain::rawlast(uint32_t *output) {
+	int pointer = data.size()-width;
+	for(int i=0;i<width;i++) 
+  		output[i] = data[pointer+i];
+}
+
 void chain::step() {
-	int p, dp, np;
+	uint32_t p, dp, np;
+	uint32_t top[width];
+	rawlast(top);
 	for(int i=0;i<width;i++) { 
-		p = buffer[buffer.size()-(width-1)];
+		p = top[i];
 		dp = ransource.getnum() * stepSize[i];
 		np = p + dp;
 		if (dp>p) np = dp-p;
@@ -65,6 +75,12 @@ void chain::repeat() {
 void chain::push() {
 	for(int i=0;i<width;i++) {
 		data.push_back(buffer[i]);
+	}
+}
+
+void chain::pop() {
+	for(int i=0;i<width;i++) {
+		data.pop_back();
 	}
 }
 
