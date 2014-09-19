@@ -52,16 +52,16 @@ void chain::rawlast(uint32_t *output) {
 }
 
 void chain::step() {
-	uint32_t p, dp, np;
+	int64_t p, np, dp;
 	uint32_t top[width];
 	rawlast(top);
 	for(int i=0;i<width;i++) { 
-		p = top[i];
-		dp = ransource.getnum() * stepSize[i];
+		p = (int64_t)top[i];
+		dp = (int64_t)(ransource.getnum() * (double)stepSize[i]);
 		np = p + dp;
-		if (dp>p) np = dp-p;
-		if (dp>(lintmax-p)) np=lintmax-(dp-(lintmax-p));
-		buffer[i] = np;
+		if (np<0) np+=lintmax;
+		if (np>lintmax) np-=lintmax;
+		buffer[i] = (uint32_t)np;
 	}
 }
 
