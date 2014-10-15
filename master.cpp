@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 	double *model;
 	int index = 0;
 	double oldlikelihood, newlikelihood;
-	generator ransource(42);
+	generator ransource;
 	fstream output;
 	
 	o.parseCL(argc, argv);
@@ -72,6 +72,8 @@ int main(int argc, char **argv) {
 
 	c.init(&o);
 	
+	ransource.initialize(1000); //Use OMP data in later versions
+
 	//Load in likelihood function
 	pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
     (agentStack.back())->setup(&o);
@@ -92,7 +94,7 @@ int main(int argc, char **argv) {
 			output << " " << newlikelihood;
 			oldlikelihood = newlikelihood;
 		} else {
-			if (ransource.flatnum()>(newlikelihood/oldlikelihood)) {
+			if (ransource.flatnum()<(newlikelihood/oldlikelihood)) {
 				output << " " << newlikelihood;
 				oldlikelihood = newlikelihood;
 			} else {
@@ -105,6 +107,7 @@ int main(int argc, char **argv) {
 		for(int j=0;j<o.getdoubleval("nparams");j++)
 			output << " " << model[j];
 		output << endl;
+		
 	}
   
 	cout << "Unloading " << cleanStack.size() << " agents..." << endl;

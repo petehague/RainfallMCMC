@@ -5,6 +5,9 @@
 */
 #include <iostream>
 #include <string>
+#include <cmath>
+
+const double pi = 3.141592;
 
 #include "include/agent.hpp"
 
@@ -26,7 +29,7 @@ void likelihood::setup(options *o) {
 
 double likelihood::invoke(chain *c, options *o) {
 	c->last(model);
-	return model[0]*model[0];
+	return -sin(model[0]*pi);
 }
 
 REGISTERAGENT(likelihood)

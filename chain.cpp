@@ -59,15 +59,15 @@ void chain::step() {
 		p = (int64_t)top[i];
 		dp = (int64_t)(ransource.getnum() * (double)stepSize[i]);
 		np = p + dp;
-		if (np<0) np+=lintmax;
-		if (np>lintmax) np-=lintmax;
+		if (np<0) np=-np;
+		if (np>lintmax) np=2L*(int64_t)lintmax-np;
 		buffer[i] = (uint32_t)np;
 	}
 }
 
 void chain::repeat() {
-	double top[width];
-	last(top);
+	uint32_t top[width];
+	rawlast(top);
 	for(int i=0;i<width;i++)
 		data.push_back(top[i]);
 }
