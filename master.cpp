@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdlib>
 #include <dlfcn.h>
 
 #include "include/agent.hpp"
@@ -17,6 +18,7 @@ using namespace std;
 
 const int err_nofile = 1, err_nospawn = 2, err_noclean = 3;
 const char *error[] = {"", "File not found", "Spawner not found", "Cleaner not found"};
+
 
 int errMessage(int e) {
 	cout << error[e] << endl;
@@ -63,8 +65,10 @@ int main(int argc, char **argv) {
 	
 	o.report();
 
+    system(("mkdir "+o.getstringval("path")).c_str());
+
 	model = new double[(uint16_t)o.getdoubleval("nparams")];
-	output.open(o.getstringval("outputfile"), fstream::out);
+	output.open(o.getstringval("path")+"/"+o.getstringval("outputfile"), fstream::out);
 	if (!output.is_open()) {
 		cout << "Can't open output file" << endl;
 		return 1;
@@ -79,11 +83,12 @@ int main(int argc, char **argv) {
     (agentStack.back())->setup(&o);
     	
 	//Load in all agents
-	for (int i=0;i<o.keycount("Agent");i++) {
-    	int result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
-    	if (result!=0) return errMessage(result);
-    	(agentStack.back())->setup(&o);
-	}
+	if (o.getrank("Agent")!=opt_emptyarray)
+		for (int i=0;i<o.keycount("Agent");i++) {
+    		int result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
+    		if (result!=0) return errMessage(result);
+    		(agentStack.back())->setup(&o);
+		}
 	
 	oldlikelihood = agentStack[0]->invoke(&c, &o);
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {

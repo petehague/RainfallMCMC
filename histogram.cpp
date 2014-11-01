@@ -114,15 +114,24 @@ double histogram::peak() {
 
 //------------------------------------------------
 
-class plothist : public agent {
+class plothist : public agent {	
+	histogram *hist;
+	uint16_t width;
 public:
 	plothist(); 
-	void setup(options *o) { };
+	void setup(options *o);
 	double invoke(chain *c, options *o);
 };
 
 plothist::plothist() {
-	//Intantiate histogram for each parameter in the chain
+}
+
+void plothist::setup(options *o) {
+	width = o->getdoubleval("nparams");
+	hist = new histogram[width];
+	
+	for (uint16_t i=0;i<width;i++)
+		hist[i].setup(10, o->getdoubleval("lowerlimit", i), o->getdoubleval("upperlimit", i));
 }
 
 double plothist::invoke(chain *c, options *o) {

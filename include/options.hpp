@@ -19,7 +19,8 @@ enum opt_vetostate {
 
 enum opt_rank {
 	opt_single,
-	opt_array
+	opt_array,
+	opt_emptyarray
 };
 
 class options {

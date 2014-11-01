@@ -104,11 +104,19 @@ string options::getstringval(string k) {
 //Setting the value of an array key
 
 bool options::setval(string k, int i, double v) {
-	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
-	for(i=i;i>0;i--)
+	
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
+	for(int j=i;j>0;j--) {
 		while(k.compare(key[index])!=0) index++;
-		
+		if (rank[index]==opt_emptyarray) {
+			double_val[index] = v;
+			rank[index]=opt_array;
+			return true;
+		}
+	}
+
+	if (i>=keycount(k)) { addval(k, v, opt_noveto, opt_array); return true; }
 	while(k.compare(key[index])!=0) index++;
 	if (index<k.size()) {
 		double_val[index] = v;
@@ -117,11 +125,19 @@ bool options::setval(string k, int i, double v) {
 }
 
 bool options::setval(string k, int i, string v) {
-	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
-	for(i=i;i>0;i--)
+
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
+	for(int j=i;j>0;j--) {
 		while(k.compare(key[index])!=0) index++;
-		
+		if (rank[index]==opt_emptyarray) {
+			string_val[index] = v;
+			rank[index]=opt_array;
+			return true;
+		}
+	}
+	
+	if (i>=keycount(k)) addval(k, v, opt_noveto, opt_array);
 	while(k.compare(key[index])!=0) index++;
 	if (index<k.size()) {
 		string_val[index] = v;
@@ -141,20 +157,16 @@ void *options::getval(string k, int i) {
 }
 
 double options::getdoubleval(string k, int i) {
-	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
-	for(i=i;i>0;i--)
-		while(k.compare(key[index])!=0) index++;
-	while(k.compare(key[index])!=0) index++;
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
+	while (arrayindex[index]!=i || k.compare(key[index])!=0) index++;
 	return double_val[index];
 }
 
 string options::getstringval(string k, int i) {
-	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
-	for(i=i;i>0;i--)
-		while(k.compare(key[index])!=0) index++;
-	while(k.compare(key[index])!=0) index++;
+	transform(k.begin(), k.end(), k.begin(), ::tolower);
+	while (arrayindex[index]!=i || k.compare(key[index])!=0) index++;
 	return string_val[index];
 }
 
@@ -187,6 +199,7 @@ int options::keycount(string k) {
 void options::parse(string item) {
 	char c_item[item.size()];
 	char *keyname, *value;
+	
 	string *valstr;
 	strcpy(c_item, item.c_str());
 	keyname = strtok(c_item, "= ");
@@ -202,9 +215,9 @@ void options::parse(string item) {
 					addval(keyname, stod(*valstr), opt_noveto, opt_single);
 				else
 					addval(keyname, *valstr, opt_noveto, opt_single);
-			} else if (getrank(keyname)==opt_array) 
-				if (gettype(keyname)==opt_double) addval(keyname, stod(*valstr), opt_noveto, opt_array); else addval(keyname, *valstr, opt_noveto, opt_array);
-			else
+			} else if (getrank(keyname)==opt_array || getrank(keyname)==opt_emptyarray) 
+				if (gettype(keyname)==opt_double) setval(keyname, keycount(keyname)+1, stod(*valstr)); else setval(keyname, keycount(keyname)+1, *valstr);
+			else 
 				if (gettype(keyname)==opt_double) setval(keyname, stod(*valstr)); else setval(keyname, *valstr);
 			delete valstr;
 		}
@@ -232,9 +245,8 @@ void options::report() {
 	cout << "======================================" << endl;
 	for(int i=0;i<key.size();i++) {
 		cout << key[i];
-		if (rank[i]==opt_array) {
-			cout << "[" << arrayindex[i] << "]";
-		}
+		if (rank[i]==opt_emptyarray) cout << "[]";
+		if (rank[i]==opt_array) cout << "[" << arrayindex[i] << "]"; 
 		cout << " = ";
 		if (type[i]==opt_double) 
 			cout << double_val[i] << endl;
