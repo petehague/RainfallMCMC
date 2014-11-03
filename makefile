@@ -40,7 +40,9 @@ clean:
 	rm rainfall
 	rm mod/*.so
 	rm bin/*.o
-
+	
+cleanmods:
+	rm mod/*.so
 
 #--------------------------------------------------------------
 #Agents	
@@ -55,6 +57,6 @@ mod/flat.so: flat.cpp $(AGENTFILES)
 mod/blob.so: blob.cpp $(AGENTFILES)
 	$(MYCPP) $(AGENTOPTS) blob.cpp -omod/blob.so
 	
-mod/histogram.so: histogram.cpp chain.cpp pick.cpp
-	$(MYCPP) $(AGENTOPTS) -omod/histogram.so
+mod/histogram.so: histogram.cpp $(AGENTFILES)
+	$(MYCPP) $(AGENTOPTS) histogram.cpp -omod/histogram.so
 

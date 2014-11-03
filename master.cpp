@@ -29,11 +29,11 @@ int pushAgent(string agentName, vector <void *> *fStack, vector<agent *> *aStack
     void *agentFile;
 	cout << "Loading " << agentName << endl;
 	agentFile = dlopen(agentName.c_str(), RTLD_LAZY);
-	if (!agentFile) return err_nofile;
+	if (!agentFile) return err_nofile; 
 		
 	dlerror();
 	spawn_agent* agentSpawner = (spawn_agent*) dlsym(agentFile, "spawn");
-	if (dlerror()) return err_nospawn;
+	if (dlerror()) return err_nospawn; 
     
 	cStack->push_back((clean_agent*) dlsym(agentFile, "clean"));
 	if (dlerror()) return err_noclean;
@@ -109,6 +109,10 @@ int main(int argc, char **argv) {
 			}
 		}
 		c.last(model);
+		
+		for(int agent_i=0;agent_i<agentStack.size(); agent_i++) 
+			agentStack[agent_i]->invoke(&c, &o);
+		
 		for(int j=0;j<o.getdoubleval("nparams");j++)
 			output << " " << model[j];
 		output << endl;

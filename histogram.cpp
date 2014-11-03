@@ -116,26 +116,40 @@ double histogram::peak() {
 
 class plothist : public agent {	
 	histogram *hist;
-	uint16_t width;
+	uint16_t nparam;
+	double *model;
+	string *filename;
 public:
-	plothist(); 
-	void setup(options *o);
-	double invoke(chain *c, options *o);
-};
-
-plothist::plothist() {
-}
-
-void plothist::setup(options *o) {
-	width = o->getdoubleval("nparams");
-	hist = new histogram[width];
+	plothist() {
+		std::cout << "Created Histograms" << std::endl;
+	}
 	
-	for (uint16_t i=0;i<width;i++)
-		hist[i].setup(10, o->getdoubleval("lowerlimit", i), o->getdoubleval("upperlimit", i));
-}
+	~plothist() {
+		for (uint16_t i=0;i<nparam;i++) {
+			cout << "Writing " << filename[i] << endl;
+			hist[i].write(filename[i]);
+		}
+	}
+	
+	void setup(options *o) {
+		nparam = o->getdoubleval("nparams");
+		hist = new histogram[nparam];
+		filename = new string[nparam];
+		model=new double [nparam];
+	
+		for (uint16_t i=0;i<nparam;i++) {
+			hist[i].setup(10, o->getdoubleval("lowerlimit", i), o->getdoubleval("upperlimit", i));
+			filename[i] = o->getstringval("path")+"/"+o->getstringval("paramname", i)+"-histogram.txt";
+		}
+	}
 
-double plothist::invoke(chain *c, options *o) {
-	return 0.0;
-}
+	double invoke(chain *c, options *o) {
+		c->last(model);
+		for (uint16_t i=0;i<nparam;i++)
+			hist[i].incbin(model[i]);
+			
+		return 0;
+	}
+};
 
 REGISTERAGENT(plothist)

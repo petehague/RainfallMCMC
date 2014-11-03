@@ -137,7 +137,7 @@ bool options::setval(string k, int i, string v) {
 		}
 	}
 	
-	if (i>=keycount(k)) addval(k, v, opt_noveto, opt_array);
+	if (i>=keycount(k)) { addval(k, v, opt_noveto, opt_array); return true; }
 	while(k.compare(key[index])!=0) index++;
 	if (index<k.size()) {
 		string_val[index] = v;

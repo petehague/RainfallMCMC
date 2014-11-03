@@ -11,7 +11,6 @@
 
 #include "include/agent.hpp"
 #include "include/pick.hpp"
-#include "include/options.hpp"
 
 using namespace std;
 

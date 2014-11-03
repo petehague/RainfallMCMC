@@ -6,7 +6,9 @@
 	addval("NParams", 0, opt_veto, opt_single); \
 	addval("Likelihood", " ", opt_veto, opt_single); \
 	addval("Agent", "", opt_noveto, opt_emptyarray); \
+	addval("agentparams", "", opt_noveto, opt_emptyarray); \
 	addval("Outputfile", " ", opt_veto, opt_single); \
+	addval("paramname", "", opt_noveto, opt_emptyarray); \
 	addval("lowerlimit", 0, opt_noveto, opt_emptyarray); \
 	addval("upperlimit", 0, opt_noveto, opt_emptyarray); \
 	addval("stepsize", 0, opt_noveto, opt_emptyarray); \
