@@ -1,4 +1,10 @@
-MYCPP := g++ -g -std=c++11 -fPIC
+ifeq ($(build), serial)
+	OMPFILE := serial.cpp
+	MYCPP := g++ -g -std=c++11 -fPIC
+else
+	OMPFILE := parallel.cpp
+	MYCPP := g++ -g -std=c++11 -fPIC -fopenmp
+endif
 AGENTFILES := chain.cpp pick.cpp options.cpp
 AGENTOPTS := -shared -ldl $(AGENTFILES)
 
@@ -8,8 +14,8 @@ all: folders rainfall mods
 mods: mod/likelihood.so mod/histogram.so mod/flat.so mod/blob.so
 	@echo Modules complete
 
-rainfall: bin/master.o bin/chain.o bin/options.o bin/pick.o
-	$(MYCPP) -ldl bin/master.o bin/chain.o bin/options.o bin/pick.o -orainfall
+rainfall: bin/master.o bin/chain.o bin/options.o bin/pick.o bin/ompswitch.o
+	$(MYCPP) -ldl bin/master.o bin/chain.o bin/options.o bin/pick.o -orainfall bin/ompswitch.o
 	@echo MCMC core code complete
 
 #--------------------------------------------------------------
@@ -27,6 +33,9 @@ bin/pick.o: pick.cpp
 	
 bin/options.o: options.cpp
 	$(MYCPP) -c options.cpp -obin/options.o
+	
+bin/ompswitch.o: $(OMPFILE)
+	$(MYCPP) -c $(OMPFILE) -obin/ompswitch.o
 
 #--------------------------------------------------------------
 #Housekeeping
@@ -37,12 +46,12 @@ folders:
 	mkdir -p mod
 
 clean:	
-	rm rainfall
-	rm mod/*.so
-	rm bin/*.o
+	rm -f rainfall
+	rm -f mod/*.so
+	rm -f bin/*.o
 	
 cleanmods:
-	rm mod/*.so
+	rm -f mod/*.so
 
 #--------------------------------------------------------------
 #Agents	

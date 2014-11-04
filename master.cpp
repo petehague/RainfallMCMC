@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <dlfcn.h>
 
+#include "include/ompswitch.hpp"
 #include "include/agent.hpp"
 #include "include/chain.hpp"
 #include "include/options.hpp"
@@ -90,8 +91,16 @@ int main(int argc, char **argv) {
     		(agentStack.back())->setup(&o);
 		}
 	
+	cout << "Running on " << num_threads() << " threads" << endl;
+	
 	oldlikelihood = agentStack[0]->invoke(&c, &o);
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
+		#pragma omp master 
+		{
+			for(int agent_i=0;agent_i<agentStack.size(); agent_i++) 
+				agentStack[agent_i]->invoke(&c, &o);
+		}
+		
 		c.step();
 		c.push();
 		newlikelihood = agentStack[0]->invoke(&c, &o);
@@ -109,9 +118,6 @@ int main(int argc, char **argv) {
 			}
 		}
 		c.last(model);
-		
-		for(int agent_i=0;agent_i<agentStack.size(); agent_i++) 
-			agentStack[agent_i]->invoke(&c, &o);
 		
 		for(int j=0;j<o.getdoubleval("nparams");j++)
 			output << " " << model[j];
