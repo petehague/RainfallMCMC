@@ -15,7 +15,7 @@ public:
   double flatnum();
   double getnum();
   generator();
-  void initialize(unsigned x);
+  void initialise(unsigned x);
 
 };
 

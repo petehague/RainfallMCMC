@@ -33,7 +33,7 @@ public:
 	double invoke(chain *c, options *o){
 		double x=1;
 
-		c->last(model);
+		c->current(model);
 		for (int i=0; i<nparam; i++)
 			x*=exp(-((model[i]-mean)*(model[i]-mean))/(width));
 		

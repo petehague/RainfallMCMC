@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <chrono>
 #include <cstdlib>
 #include <dlfcn.h>
 
@@ -53,9 +54,11 @@ int main(int argc, char **argv) {
 	chain c;
 	double *model;
 	int index = 0;
+	int is_parallel;
 	double oldlikelihood, newlikelihood;
 	generator ransource;
 	fstream output;
+	chrono::system_clock::time_point startpoint = chrono::system_clock::now();
 	
 	o.parseCL(argc, argv);
 	
@@ -76,9 +79,8 @@ int main(int argc, char **argv) {
 	}
 
 	c.init(&o);
+	ransource.initialise(startpoint.time_since_epoch().count()); 
 	
-	ransource.initialize(1000); //Use OMP data in later versions
-
 	//Load in likelihood function
 	pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
     (agentStack.back())->setup(&o);
@@ -93,17 +95,25 @@ int main(int argc, char **argv) {
 	
 	cout << "Running on " << num_threads() << " threads" << endl;
 	
+	if (num_threads()==1) is_parallel=0; else is_parallel=1;
+	
 	oldlikelihood = agentStack[0]->invoke(&c, &o);
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
-		#pragma omp master 
+		c.step();	
+		#pragma omp parallel
 		{
-			for(int agent_i=0;agent_i<agentStack.size(); agent_i++) 
-				agentStack[agent_i]->invoke(&c, &o);
+			if (thread_num()==0) 
+				for(int agent_i=0;agent_i<agentStack.size(); agent_i++) 
+					agentStack[agent_i]->invoke(&c, &o);
+
+			if (thread_num()>=is_parallel) {
+				newlikelihood = agentStack[0]->invoke(&c, &o);
+			}
 		}
 		
-		c.step();
+		#pragma omp barrier
 		c.push();
-		newlikelihood = agentStack[0]->invoke(&c, &o);
+		
 		if (newlikelihood>oldlikelihood) {
 			output << " " << newlikelihood;
 			oldlikelihood = newlikelihood;
@@ -122,7 +132,6 @@ int main(int argc, char **argv) {
 		for(int j=0;j<o.getdoubleval("nparams");j++)
 			output << " " << model[j];
 		output << endl;
-		
 	}
   
 	cout << "Unloading " << cleanStack.size() << " agents..." << endl;

@@ -56,7 +56,7 @@ generator::generator(){
 
 }
 
-void generator::initialize(unsigned x){
+void generator::initialise(unsigned x){
  unsigned seed = chrono::system_clock::now().time_since_epoch().count()*x;
  unsigned burn;
  g1.seed(seed);

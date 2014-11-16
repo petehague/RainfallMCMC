@@ -15,6 +15,8 @@ void chain::init(options *o) {
 	double p;
 	int i;
 	
+	ransource.initialise(1);
+	
 	width = o->getdoubleval("nparams");
 	for (i=0;i<width;i++) {
 		//Get parameters from options object
@@ -63,6 +65,11 @@ void chain::step() {
 		if (np>lintmax) np=2L*(int64_t)lintmax-np;
 		buffer[i] = (uint32_t)np;
 	}
+}
+
+void chain::current(double *output) {
+	for(int i=0;i<width;i++) 
+  		output[i] = rangeStart[i]+(double)buffer[i]*dRange[i];
 }
 
 void chain::repeat() {

@@ -22,7 +22,7 @@ public:
 	}
 	
 	double invoke(chain *c, options *o){
-		c->last(model);
+		c->current(model);
 		//Return the likelihood of "model"
 		return 0;
 	}
