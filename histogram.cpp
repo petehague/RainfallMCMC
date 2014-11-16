@@ -7,7 +7,6 @@
 #include <string>
 #include <iostream>
 #include <cmath>
-
 #include <cinttypes>
 
 #include "include/histogram.hpp"
