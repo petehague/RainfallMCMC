@@ -97,7 +97,12 @@ int main(int argc, char **argv) {
 	
 	if (num_threads()==1) is_parallel=0; else is_parallel=1;
 	
-	oldlikelihood = agentStack[0]->invoke(&c, &o);
+	oldlikelihood = 0;
+	#pragma omp parallel reduction(+:oldlikelihood)
+	{
+		if (thread_num()>=is_parallel) oldlikelihood += agentStack[0]->invoke(&c, &o);
+	}
+	
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
 		c.step();	
 		newlikelihood = 0;
