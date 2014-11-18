@@ -100,6 +100,7 @@ int main(int argc, char **argv) {
 	oldlikelihood = agentStack[0]->invoke(&c, &o);
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
 		c.step();	
+		newlikelihood = 0;
 		#pragma omp parallel reduction(+:newlikelihood)
 		{
 			if (thread_num()==0) {		
