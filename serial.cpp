@@ -1,7 +1,7 @@
 #include <cinttypes>
 
 uint16_t thread_num() {
-	return 1;
+	return 0;
 }
 
 uint16_t num_threads() {
