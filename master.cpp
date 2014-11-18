@@ -40,7 +40,7 @@ int pushAgent(string agentName, vector <void *> *fStack, vector<agent *> *aStack
 	cStack->push_back((clean_agent*) dlsym(agentFile, "clean"));
 	if (dlerror()) return err_noclean;
 	
-    aStack->push_back(agentSpawner());
+	aStack->push_back(agentSpawner());
 	fStack->push_back(agentFile);
     
     return 0;
@@ -100,14 +100,21 @@ int main(int argc, char **argv) {
 	oldlikelihood = agentStack[0]->invoke(&c, &o);
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
 		c.step();	
-		#pragma omp parallel
+		#pragma omp parallel reduction(+:newlikelihood)
 		{
-			if (thread_num()==0) 
+			if (thread_num()==0) {		
 				for(int agent_i=0;agent_i<agentStack.size(); agent_i++) 
 					agentStack[agent_i]->invoke(&c, &o);
+				
+				c.last(model);
+		
+				for(int j=0;j<o.getdoubleval("nparams");j++)
+					output << " " << model[j];
+				output << endl;
+			}
 
 			if (thread_num()>=is_parallel) {
-				newlikelihood = agentStack[0]->invoke(&c, &o);
+				newlikelihood += agentStack[0]->invoke(&c, &o);
 			}
 		}
 		
@@ -127,11 +134,6 @@ int main(int argc, char **argv) {
 				output << " " << oldlikelihood;
 			}
 		}
-		c.last(model);
-		
-		for(int j=0;j<o.getdoubleval("nparams");j++)
-			output << " " << model[j];
-		output << endl;
 	}
   
 	cout << "Unloading " << cleanStack.size() << " agents..." << endl;
