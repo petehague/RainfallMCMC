@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 		c.step();	
 		c.current(newmodel);
 		newlikelihood = 0;
-		#pragma omp parallel reduction(+:newlikelihood) private(newmodel)
+		#pragma omp parallel reduction(+:newlikelihood)
 		{
 			if (thread_num()==0) {		
 				for(int agent_i=1;agent_i<agentStack.size(); agent_i++) 
@@ -130,7 +130,6 @@ int main(int argc, char **argv) {
 			}
 		}
 		
-		#pragma omp barrier
 		c.push();
 		
 		if (newlikelihood>oldlikelihood) {
