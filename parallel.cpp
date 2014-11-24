@@ -6,7 +6,7 @@ uint16_t thread_num() {
 }
 
 uint16_t num_threads() {
-	return omp_get_num_threads();
+	return omp_get_max_threads();
 }
 
 void set_threads(uint16_t n) {
