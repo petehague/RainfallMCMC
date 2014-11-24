@@ -14,14 +14,22 @@
 
 using namespace std;
 
+const double pi=3.14159265;
+
 class blob : public agent {
 	int nparam;
-	double mean, width;
+	double meanx, meany, width, angle;
+	generator ransource;
+	chrono::system_clock::time_point startpoint;
 public:
 	blob () {
-		mean=0.5;
-		width=2*0.1*0.1;
-		std::cout << "Created blob: Mean=" << mean << " Width=" << width << std::endl;
+		startpoint = chrono::system_clock::now();
+		ransource.initialise(startpoint.time_since_epoch().count()+1000);
+		meanx=0.3+ransource.flatnum()*0.2;
+		meany=0.3+ransource.flatnum()*0.2;
+		width=ransource.flatnum()*0.3*0.1*0.1;
+		angle=ransource.flatnum()*pi;
+		std::cout << "Created blob: Mean=" << meanx << "," << meany << " Width=" << width << " " << "Angle=" << angle << std::endl;
 	}
 	
 	void setup(options *o) {
@@ -29,12 +37,15 @@ public:
 	}
 	
 	double eval(double *model) {
-		double x=1;
+		double x, y, result=1;
 		
-		for (int i=0; i<nparam; i++)
-			x*=exp(-((model[i]-mean)*(model[i]-mean))/(width));
+		x = (model[0]-meanx)*cos(angle) + (model[1]-meany)*sin(angle);
+		y = (model[1]-meany)*cos(angle) - (model[0]-meanx)*sin(angle);
 		
-		return x;
+		result*=exp(-(x*x)/(width));
+		result*=exp(-(y*y)/(width*3.0));
+		
+		return result;
 	}
 };
 

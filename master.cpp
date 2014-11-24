@@ -146,6 +146,11 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
+	
+	c.last(model);
+	for(int j=0;j<o.getdoubleval("nparams");j++)
+		output << " " << model[j];
+	
   
 	cout << "Unloading " << cleanStack.size() << " agents..." << endl;
 
