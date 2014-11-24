@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
 	options o;
 	chain c;
 	double *model;
+	double *newmodel;
 	int index = 0;
 	int is_parallel;
 	double oldlikelihood, newlikelihood;
@@ -72,6 +73,8 @@ int main(int argc, char **argv) {
     system(("mkdir "+o.getstringval("path")).c_str());
 
 	model = new double[(uint16_t)o.getdoubleval("nparams")];
+	newmodel = new double[(uint16_t)o.getdoubleval("nparams")];
+	
 	output.open(o.getstringval("path")+"/"+o.getstringval("outputfile"), fstream::out);
 	if (!output.is_open()) {
 		cout << "Can't open output file" << endl;
@@ -98,18 +101,21 @@ int main(int argc, char **argv) {
 	if (num_threads()==1) is_parallel=0; else is_parallel=1;
 	
 	oldlikelihood = 0;
+	c.last(model);
 	#pragma omp parallel reduction(+:oldlikelihood)
 	{
-		if (thread_num()>=is_parallel) oldlikelihood += agentStack[0]->invoke(&c, &o);
+		if (thread_num()>=is_parallel) oldlikelihood += agentStack[0]->eval(model);
 	}
+	output << " " << oldlikelihood;
 	
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
 		c.step();	
+		c.current(newmodel);
 		newlikelihood = 0;
-		#pragma omp parallel reduction(+:newlikelihood)
+		#pragma omp parallel reduction(+:newlikelihood) private(newmodel)
 		{
 			if (thread_num()==0) {		
-				for(int agent_i=0;agent_i<agentStack.size(); agent_i++) 
+				for(int agent_i=1;agent_i<agentStack.size(); agent_i++) 
 					agentStack[agent_i]->invoke(&c, &o);
 				
 				c.last(model);
@@ -120,7 +126,7 @@ int main(int argc, char **argv) {
 			}
 
 			if (thread_num()>=is_parallel) {
-				newlikelihood += agentStack[0]->invoke(&c, &o);
+				newlikelihood += agentStack[0]->eval(newmodel);
 			}
 		}
 		

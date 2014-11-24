@@ -10,6 +10,7 @@ public:
     virtual ~agent() { }
     virtual void setup(options *o) { };
     virtual double invoke(chain *c, options *o) { return 0.0; }
+    virtual double eval(double *m) { return 0.0; } 
 };
 
 // the types of the class factories

@@ -16,7 +16,6 @@ using namespace std;
 
 class blob : public agent {
 	int nparam;
-	double *model;
 	double mean, width;
 public:
 	blob () {
@@ -27,13 +26,11 @@ public:
 	
 	void setup(options *o) {
 		nparam=(int)o->getdoubleval("Nparams");
-		model=new double [nparam];
 	}
 	
-	double invoke(chain *c, options *o){
+	double eval(double *model) {
 		double x=1;
-
-		c->current(model);
+		
 		for (int i=0; i<nparam; i++)
 			x*=exp(-((model[i]-mean)*(model[i]-mean))/(width));
 		

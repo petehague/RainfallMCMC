@@ -14,12 +14,11 @@ public:
 	flat () {
 		std::cout << "flat created " << std::endl;
 	}
-	void setup(options *o) { };
-	double invoke(chain *c, options *o);
+	void setup(options *o) { }
+	
+	double eval(double *model) {
+		return 1.0;
+	}
 };
-
-double flat::invoke(chain *c, options *o) {
-	return 1.0;
-}
 
 REGISTERAGENT(flat)
