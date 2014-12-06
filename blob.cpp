@@ -27,7 +27,7 @@ public:
 		ransource.initialise(startpoint.time_since_epoch().count()+1000);
 		meanx=0.3+ransource.flatnum()*0.2;
 		meany=0.3+ransource.flatnum()*0.2;
-		width=ransource.flatnum()*0.3*0.1*0.1;
+		width=0.1+ransource.flatnum()*0.3*0.1*0.1;
 		angle=ransource.flatnum()*pi;
 		std::cout << "Created blob: Mean=" << meanx << "," << meany << " Width=" << width << " " << "Angle=" << angle << std::endl;
 	}
