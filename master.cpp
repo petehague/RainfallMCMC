@@ -59,7 +59,9 @@ int main(int argc, char **argv) {
 	double oldlikelihood, newlikelihood;
 	generator ransource;
 	fstream output;
-	chrono::system_clock::time_point startpoint = chrono::system_clock::now();
+	auto startpoint = chrono::system_clock::now();
+	double elapsed;
+	
 	
 	o.parseCL(argc, argv);
 	
@@ -161,4 +163,14 @@ int main(int argc, char **argv) {
 	}
 	
 	output.close();
+	
+	elapsed = (double)(std::chrono::duration_cast<std::chrono::milliseconds>(chrono::system_clock::now()-startpoint).count() )/1000.0;
+	
+	cout << "Time elapsed: " << elapsed << " seconds." << endl;
+	if (elapsed/o.getdoubleval("MaxModels")>1.0) 
+		cout << "Time per model: " << elapsed/o.getdoubleval("MaxModels") << " seconds." << endl;
+	else
+		cout << "Time per model: " << (elapsed/o.getdoubleval("MaxModels"))*1000.0 << " milliseconds." << endl;
+	
+	
 }
