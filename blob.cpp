@@ -18,7 +18,7 @@ const double pi=3.14159265;
 
 class blob : public agent {
 	int nparam;
-	double meanx, meany, width, angle;
+	double meanx, meany, width, angle, asp;
 	generator ransource;
 	chrono::system_clock::time_point startpoint;
 public:
@@ -27,9 +27,11 @@ public:
 		ransource.initialise(startpoint.time_since_epoch().count()+1000);
 		meanx=0.3+ransource.flatnum()*0.2;
 		meany=0.3+ransource.flatnum()*0.2;
-		width=0.1+ransource.flatnum()*0.3*0.1*0.1;
+		width=0.01+ransource.flatnum()*0.1;
+		asp=1.0+ransource.flatnum()*2.0;
 		angle=ransource.flatnum()*pi;
-		std::cout << "Created blob: Mean=" << meanx << "," << meany << " Width=" << width << " " << "Angle=" << angle << std::endl;
+		std::cout << "Created blob: Mean=" << meanx << "," << meany << " Width=" << width
+			 << " Aspect ratio=" << asp << " Angle=" << angle << std::endl;
 	}
 	
 	void setup(options *o) {
@@ -42,8 +44,8 @@ public:
 		x = (model[0]-meanx)*cos(angle) + (model[1]-meany)*sin(angle);
 		y = (model[1]-meany)*cos(angle) - (model[0]-meanx)*sin(angle);
 		
-		result*=exp(-(x*x)/(width));
-		result*=exp(-(y*y)/(width*3.0));
+		result*=exp(-(x*x)/(width*width));
+		result*=exp(-(y*y)/(width*width*asp*asp));
 		
 		return result;
 	}
