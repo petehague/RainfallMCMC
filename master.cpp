@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
 	generator ransource;
 	fstream output;
 	auto startpoint = chrono::system_clock::now();
+	chrono::system_clock::time_point midpoint;
 	double elapsed;
 	
 	
@@ -109,6 +110,8 @@ int main(int argc, char **argv) {
 		if (thread_num()>=is_parallel) oldlikelihood += agentStack[0]->eval(model);
 	}
 	output << " " << oldlikelihood;
+	
+	midpoint = chrono::system_clock::now();
 	
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
 		c.step();	
@@ -167,6 +170,10 @@ int main(int argc, char **argv) {
 	elapsed = (double)(std::chrono::duration_cast<std::chrono::milliseconds>(chrono::system_clock::now()-startpoint).count() )/1000.0;
 	
 	cout << "Time elapsed: " << elapsed << " seconds." << endl;
+	
+	elapsed = (double)(std::chrono::duration_cast<std::chrono::milliseconds>(chrono::system_clock::now()-midpoint).count() )/1000.0;
+	
+	cout << "Chain time: " << elapsed << " seconds." << endl;
 	if (elapsed/o.getdoubleval("MaxModels")>1.0) 
 		cout << "Time per model: " << elapsed/o.getdoubleval("MaxModels") << " seconds." << endl;
 	else
