@@ -92,12 +92,13 @@ int main(int argc, char **argv) {
     (agentStack.back())->setup(&o);
     	
 	//Load in all agents
-	if (o.getrank("Agent")!=opt_emptyarray)
+	if (o.getrank("Agent")!=opt_emptyarray) {
 		for (int i=0;i<o.keycount("Agent");i++) {
     		int result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
     		if (result!=0) return errMessage(result);
     		(agentStack.back())->setup(&o);
 		}
+	}
 	
 	cout << "Running on " << num_threads() << " threads" << endl;
 	
@@ -120,13 +121,15 @@ int main(int argc, char **argv) {
 		#pragma omp parallel reduction(+:newlikelihood)
 		{
 			if (thread_num()==0) {		
-				for(int agent_i=1;agent_i<agentStack.size(); agent_i++) 
+				for(int agent_i=1;agent_i<agentStack.size(); agent_i++) {
 					agentStack[agent_i]->invoke(&c, &o);
+				}
 				
 				c.last(model);
 		
-				for(int j=0;j<o.getdoubleval("nparams");j++)
+				for(int j=0;j<o.getdoubleval("nparams");j++) {
 					output << " " << model[j];
+				}
 				output << endl;
 			}
 
@@ -153,9 +156,9 @@ int main(int argc, char **argv) {
 	}
 	
 	c.last(model);
-	for(int j=0;j<o.getdoubleval("nparams");j++)
+	for(int j=0;j<o.getdoubleval("nparams");j++) {
 		output << " " << model[j];
-	
+	}
   
 	cout << "Unloading " << cleanStack.size() << " agents..." << endl;
 
@@ -174,10 +177,10 @@ int main(int argc, char **argv) {
 	elapsed = (double)(std::chrono::duration_cast<std::chrono::milliseconds>(chrono::system_clock::now()-midpoint).count() )/1000.0;
 	
 	cout << "Chain time: " << elapsed << " seconds." << endl;
-	if (elapsed/o.getdoubleval("MaxModels")>1.0) 
+	if (elapsed/o.getdoubleval("MaxModels")>1.0) {
 		cout << "Time per model: " << elapsed/o.getdoubleval("MaxModels") << " seconds." << endl;
-	else
+	} else {
 		cout << "Time per model: " << (elapsed/o.getdoubleval("MaxModels"))*1000.0 << " milliseconds." << endl;
-	
+	}
 	
 }

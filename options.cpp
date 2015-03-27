@@ -51,7 +51,9 @@ void options::setval(string k, double v) {
 	if (index<k.size()) {
 		double_val[index] = v;
 		veto[index] = opt_noveto;
-	} else addval(k, v, opt_noveto, opt_single);
+	} else {
+		addval(k, v, opt_noveto, opt_single);
+	}
 }
 
 void options::setval(string k, string v) {
@@ -61,7 +63,9 @@ void options::setval(string k, string v) {
 	if (index<k.size()) {
 		string_val[index] = v;
 		veto[index] = opt_noveto;
-	} else addval(k, v, opt_noveto, opt_single);
+	} else {
+		addval(k, v, opt_noveto, opt_single);
+	}
 }
 
 opt_type options::gettype(string k) {
@@ -121,7 +125,9 @@ bool options::setval(string k, int i, double v) {
 	if (index<k.size()) {
 		double_val[index] = v;
 		return true;
-	} else return false;
+	} else {
+		return false;
+	}
 }
 
 bool options::setval(string k, int i, string v) {
@@ -142,14 +148,17 @@ bool options::setval(string k, int i, string v) {
 	if (index<k.size()) {
 		string_val[index] = v;
 		return true;
-	} else return false;
+	} else {
+		return false;
+	}
 }
 
 void *options::getval(string k, int i) {
 	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int index = 0;
-	for(i=i;i>0;i--)
+	for(i=i;i>0;i--) {
 		while(k.compare(key[index])!=0) index++;
+	}
 	while(k.compare(key[index])!=0) index++;
 	if (index>=k.size()) return NULL;
 	if (type[index]==opt_double) return &double_val[index];
@@ -175,11 +184,12 @@ string options::getstringval(string k, int i) {
 bool options::vetoCheck() {
 	bool result = true;
 	
-	for(int i=0;i<veto.size();i++) 
+	for(int i=0;i<veto.size();i++) {
 		if (veto[i]==opt_veto) {
 			cout << "Mandatory option missing: " << key[i] << endl;
 			result=false;
 		}
+	}
 		
 	return result;
 }
@@ -189,8 +199,9 @@ bool options::vetoCheck() {
 int options::keycount(string k) {
 	transform(k.begin(), k.end(), k.begin(), ::tolower);
 	int result = 0;
-	for (int i=0;i<key.size();i++)
+	for (int i=0;i<key.size();i++) {
 		if (k.compare(key[i])==0) result++;
+	}
 	return result;
 }
 
@@ -211,14 +222,18 @@ void options::parse(string item) {
 		} else {	
 			valstr = new string(value);
 			if (keycount(keyname)==0) {
-				if ((*valstr).find_first_not_of("0123456789+-.")==string::npos) 
+				if ((*valstr).find_first_not_of("0123456789+-.")==string::npos) {
 					addval(keyname, stod(*valstr), opt_noveto, opt_single);
-				else
+				} else {
 					addval(keyname, *valstr, opt_noveto, opt_single);
-			} else if (getrank(keyname)==opt_array || getrank(keyname)==opt_emptyarray) 
-				if (gettype(keyname)==opt_double) setval(keyname, keycount(keyname)+1, stod(*valstr)); else setval(keyname, keycount(keyname)+1, *valstr);
-			else 
-				if (gettype(keyname)==opt_double) setval(keyname, stod(*valstr)); else setval(keyname, *valstr);
+				}
+			} else {
+				if (getrank(keyname)==opt_array || getrank(keyname)==opt_emptyarray) {
+					if (gettype(keyname)==opt_double) setval(keyname, keycount(keyname)+1, stod(*valstr)); else setval(keyname, keycount(keyname)+1, *valstr);
+				} else {
+					if (gettype(keyname)==opt_double) setval(keyname, stod(*valstr)); else setval(keyname, *valstr);
+				}
+			}
 			delete valstr;
 		}
 	}
@@ -248,10 +263,11 @@ void options::report() {
 		if (rank[i]==opt_emptyarray) cout << "[]";
 		if (rank[i]==opt_array) cout << "[" << arrayindex[i] << "]"; 
 		cout << " = ";
-		if (type[i]==opt_double) 
+		if (type[i]==opt_double) {
 			cout << double_val[i] << endl;
-		else
+		} else {
 			cout << string_val[i] << endl;
+		}
 	}
 	cout << "======================================" << endl;
 }

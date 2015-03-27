@@ -36,8 +36,9 @@ public:
 		model = new double[nparam];
 		prevmodel = new double[nparam];
 		record = new bool*[nparam];
-		for (uint16_t i=0;i<nparam;i++)
+		for (uint16_t i=0;i<nparam;i++) {
 			record[i] = new bool[lookback];
+		}
 		tick = 0;
 	}
 
@@ -54,8 +55,9 @@ public:
 			tick=0;
 			for(uint16_t i=0;i<nparam;i++) {
 				double rate=0.0;
-				for(uint16_t j=0;j<nparam;j++) 
+				for(uint16_t j=0;j<nparam;j++) {
 					if (record[i][j]) rate+=1.0; 
+				}
 				rate/=(double)lookback;
 				c->setStep(i, c->getStep(i)*(rate/target));
 				std::cout << c->getStep(i) << " ";

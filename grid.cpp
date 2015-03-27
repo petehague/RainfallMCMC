@@ -117,12 +117,14 @@ public:
 	}
 	
 	~plotgrid() {
-		for (uint16_t y=0;y<nparam;y++)
-			for (uint16_t x=0;x<nparam;x++)
+		for (uint16_t y=0;y<nparam;y++) {
+			for (uint16_t x=0;x<nparam;x++) {
 				if (x!=y) {
 					cout << "Writing " << filename[x][y] << endl;
 					gr[x][y].write(filename[x][y]);
 				}
+			}
+		}
 	}
 	
 	void setup(options *o) {
@@ -136,21 +138,22 @@ public:
 		}
 		model=new double [nparam];
 	
-		for (uint16_t y=0;y<nparam;y++)
+		for (uint16_t y=0;y<nparam;y++) {
 			for (uint16_t x=0;x<nparam;x++) {
 				gr[x][y].setup(10, o->getdoubleval("lowerlimit", x), o->getdoubleval("upperlimit", x),
 				  o->getdoubleval("lowerlimit", y), o->getdoubleval("upperlimit", y));
 				filename[x][y] = o->getstringval("path")+"/"+o->getstringval("paramname", x)+o->getstringval("paramname", y)+"-grid.txt";
 			}
+		}
 	}
 
 	double invoke(chain *c, options *o) {
 		c->last(model);
-		for (uint16_t y=0;y<nparam;y++)
-			for (uint16_t x=0;x<nparam;x++)
+		for (uint16_t y=0;y<nparam;y++) {
+			for (uint16_t x=0;x<nparam;x++) {
 				gr[x][y].incbin(model[x], model[y]);
-		
-		
+			}
+		}
 		return 0;
 	}
 };

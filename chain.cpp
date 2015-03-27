@@ -45,20 +45,23 @@ double chain::getStep(uint16_t n) {
 
 void chain::getModel(uint32_t index, double *output) {
 	index*=width;
-	for(int i=0;i<width;i++) 
+	for(int i=0;i<width;i++) {
 		output[i] = rangeStart[i]+(double)data[index+i]*dRange[i];
+	}
 }
 
 void chain::last(double *output) {
 	int pointer = data.size()-width;
-	for(int i=0;i<width;i++) 
+	for(int i=0;i<width;i++) {
   		output[i] = rangeStart[i]+(double)data[pointer+i]*dRange[i];
+  	}
 }
 
 void chain::rawlast(uint32_t *output) {
 	int pointer = data.size()-width;
-	for(int i=0;i<width;i++) 
+	for(int i=0;i<width;i++) {
   		output[i] = data[pointer+i];
+  	}
 }
 
 void chain::step() {
@@ -76,15 +79,17 @@ void chain::step() {
 }
 
 void chain::current(double *output) {
-	for(int i=0;i<width;i++) 
+	for(int i=0;i<width;i++) {
   		output[i] = rangeStart[i]+(double)buffer[i]*dRange[i];
+  	}
 }
 
 void chain::repeat() {
 	uint32_t top[width];
 	rawlast(top);
-	for(int i=0;i<width;i++)
+	for(int i=0;i<width;i++) {
 		data.push_back(top[i]);
+	}
 }
 
 void chain::push() {
