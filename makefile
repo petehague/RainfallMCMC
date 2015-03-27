@@ -11,7 +11,7 @@ AGENTOPTS := -shared -ldl $(AGENTFILES)
 all: folders rainfall mods
 	@echo Make complete
 
-mods: mod/likelihood.so mod/histogram.so mod/flat.so mod/blob.so mod/grid.so
+mods: mod/likelihood.so mod/histogram.so mod/flat.so mod/blob.so mod/grid.so mod/adaptive.so
 	@echo Modules complete
 
 rainfall: bin/master.o bin/chain.o bin/options.o bin/pick.o bin/ompswitch.o
@@ -71,3 +71,6 @@ mod/histogram.so: histogram.cpp $(AGENTFILES)
 
 mod/grid.so: grid.cpp $(AGENTFILES)
 	$(MYCPP) $(AGENTOPTS) grid.cpp -omod/grid.so
+	
+mod/adaptive.so: adaptive.cpp $(AGENTFILES)
+	$(MYCPP) $(AGENTOPTS) adaptive.cpp -omod/adaptive.so

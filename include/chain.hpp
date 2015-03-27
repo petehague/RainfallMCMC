@@ -25,6 +25,8 @@ public:
 	chain(); 
 	void init(options *o);
 	void getModel(uint32_t index, double *output);
+	void setStep(uint16_t n, double val);
+	double getStep(uint16_t n);
 	void last(double *output);
 	void current(double *output);
 	void rawlast(uint32_t *output);

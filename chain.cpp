@@ -35,6 +35,14 @@ void chain::init(options *o) {
 	}
 }
 
+void chain::setStep(uint16_t n, double value) {
+	stepSize[n] = value;
+}
+
+double chain::getStep(uint16_t n) {
+	return stepSize[n];
+}
+
 void chain::getModel(uint32_t index, double *output) {
 	index*=width;
 	for(int i=0;i<width;i++) 
