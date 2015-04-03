@@ -1,7 +1,7 @@
 Rainfall
 ========
 
-A modular MCMC code designed for computationally intensive likelihood functions.
+A modular MCMC code designed for computationally intensive likelihood functions. It is designed to run on shared memory machines, with the likelihood function running in parallel whilst a single thread takes care of administrative functions and postprocessing. All functions, including likelihood calculation, are dynamically linked.
 
 Purpose
 -------
@@ -24,8 +24,10 @@ Status
 ------
 
 Currently, only the serial version of the code is being tested. 
-The only implementation of MCMC available is the Metropolis-Hastings algorithm
-At the moment the focus is on constructing a set of utility modules, such as ones providing adaptive step size
+
+The only implementation of MCMC available is the Metropolis-Hastings algorithm.
+
+At the moment the focus is on constructing a set of utility modules, such as ones providing adaptive step size.
 
 Getting Started
 ---------------
