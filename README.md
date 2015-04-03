@@ -9,6 +9,7 @@ Purpose
 My astrophysics research uses Bayesian methods to examine galaxies, and I require a powerful and flexible MCMC code to do this. The work that has led to the development of RainfallMCMC is covered in the following papers:
 
 [Dark matter in disc galaxies - I. A Markov Chain Monte Carlo method and application to DDO 154](http://adsabs.harvard.edu/abs/2013MNRAS.433.2314H)
+
 [Dark matter in disc galaxies - II. Density profiles as constraints on feedback scenarios](http://adsabs.harvard.edu/abs/2014MNRAS.443.3712H)
 
 
