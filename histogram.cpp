@@ -142,7 +142,7 @@ public:
 		model=new double [nparam];
 	
 		for (uint16_t i=0;i<nparam;i++) {
-			hist[i].setup(10, o->getdoubleval("lowerlimit", i), o->getdoubleval("upperlimit", i));
+			hist[i].setup(40, o->getdoubleval("lowerlimit", i), o->getdoubleval("upperlimit", i));
 			filename[i] = o->getstringval("path")+"/"+o->getstringval("paramname", i)+"-histogram.txt";
 		}
 	}

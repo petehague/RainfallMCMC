@@ -25,6 +25,7 @@ public:
 	chain(); 
 	void init(options *o);
 	void getModel(uint32_t index, double *output);
+	void getRawModel(uint32_t index, uint32_t *output);
 	void setStep(uint16_t n, double val);
 	double getStep(uint16_t n);
 	void last(double *output);
@@ -33,6 +34,7 @@ public:
 	void push();
 	void pop();
 	void step();
+	void makestep(double *newbuffer);
 	void repeat();
 	int size();
 };

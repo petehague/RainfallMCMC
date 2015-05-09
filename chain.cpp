@@ -36,17 +36,24 @@ void chain::init(options *o) {
 }
 
 void chain::setStep(uint16_t n, double value) {
-	stepSize[n] = value;
+	stepSize[n] = (uint32_t)((value-rangeStart[n])/dRange[n]);
 }
 
 double chain::getStep(uint16_t n) {
-	return stepSize[n];
+	return rangeStart[n]+(double)stepSize[n]*dRange[n];
 }
 
 void chain::getModel(uint32_t index, double *output) {
 	index*=width;
 	for(int i=0;i<width;i++) {
 		output[i] = rangeStart[i]+(double)data[index+i]*dRange[i];
+	}
+}
+
+void chain::getRawModel(uint32_t index, uint32_t *output) {
+	index*=width;
+	for(int i=0;i<width;i++) {
+		output[i] = data[index+i];
 	}
 }
 
@@ -78,6 +85,12 @@ void chain::step() {
 	}
 }
 
+void chain::makestep(double *newbuffer) {
+	for(int i=0;i<width;i++) { 
+		buffer[i] = newbuffer[i]/dRange[i]-rangeStart[i];
+	}
+}
+
 void chain::current(double *output) {
 	for(int i=0;i<width;i++) {
   		output[i] = rangeStart[i]+(double)buffer[i]*dRange[i];
@@ -105,5 +118,5 @@ void chain::pop() {
 }
 
 int chain::size() { 
-	return buffer.size()/(double)width;
+	return data.size()/(double)width;
 }

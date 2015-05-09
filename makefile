@@ -1,14 +1,14 @@
-ifeq ($(build), serial)
+ifeq ($(build), parallel)
+	OMPFILE := serial.cpp
+	MYCPP := g++ -g -std=c++11 -fPIC -fopenmp
+else
 	OMPFILE := serial.cpp
 	MYCPP := g++ -g -std=c++11 -fPIC
-else
-	OMPFILE := parallel.cpp
-	MYCPP := g++ -g -std=c++11 -fPIC -fopenmp
 endif
 AGENTFILES := chain.cpp pick.cpp options.cpp
 AGENTOPTS := -shared -ldl $(AGENTFILES)
 
-all: folders rainfall mods
+all: folders rainfall navigate mods
 	@echo Make complete
 
 mods: mod/likelihood.so mod/histogram.so mod/flat.so mod/blob.so mod/grid.so mod/adaptive.so
@@ -17,6 +17,9 @@ mods: mod/likelihood.so mod/histogram.so mod/flat.so mod/blob.so mod/grid.so mod
 rainfall: bin/master.o bin/chain.o bin/options.o bin/pick.o bin/ompswitch.o
 	$(MYCPP) -ldl bin/master.o bin/chain.o bin/options.o bin/pick.o -orainfall bin/ompswitch.o
 	@echo MCMC core code complete
+
+navigate: bin/navigate.o bin/chain.o bin/options.o bin/pick.o
+	$(MYCPP) -ldl bin/navigate.o bin/chain.o bin/options.o bin/pick.o -onavigate
 
 #--------------------------------------------------------------
 #Core code
@@ -36,6 +39,14 @@ bin/options.o: options.cpp
 	
 bin/ompswitch.o: $(OMPFILE)
 	$(MYCPP) -c $(OMPFILE) -obin/ompswitch.o
+
+bin/navigate.o: navigate.cpp
+	$(MYCPP) -c navigate.cpp -obin/navigate.o
+
+#--------------------------------------------------------------
+#Utilities
+#--------------------------------------------------------------
+
 
 #--------------------------------------------------------------
 #Housekeeping
