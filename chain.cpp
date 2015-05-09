@@ -31,7 +31,7 @@ void chain::init(options *o) {
 		data.push_back((uint32_t)((p-rangeStart.back())/dRange.back()));
 		buffer.push_back(data[i]);
 		
-		std::cout << "Parameter " << o->getstringval("paramname", i) << ": " << rangeStart[i] << "+n*" << dRange[i] << std::endl;
+		//std::cout << "Parameter " << o->getstringval("paramname", i) << ": " << rangeStart[i] << "+n*" << dRange[i] << std::endl;
 	}
 }
 
