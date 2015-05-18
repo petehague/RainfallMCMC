@@ -11,6 +11,12 @@ using std::vector;
 
 const double lintmax=4294967295; 
 
+enum lim_type {
+	lim_flat,
+	lim_periodic,
+	lim_gaussian
+};
+
 class chain {
 	uint16_t width;
 	vector <uint32_t> data;
@@ -20,6 +26,7 @@ class chain {
 	vector <uint32_t> stepSize;
 	vector <double> startMean;
 	vector <double> startDev;
+	vector <lim_type> limits;
 	generator ransource;
 public:
 	chain(); 

@@ -25,7 +25,11 @@ void chain::init(options *o) {
 		stepSize.push_back((uint32_t)(o->getdoubleval("stepsize", i)/dRange.back()));
 		startMean.push_back(o->getdoubleval("startmean", i));
 		startDev.push_back(o->getdoubleval("startdev", i));
+		if ((o->getstringval("limtype", i)).compare("flat")==0) limits.push_back(lim_flat);
+		if ((o->getstringval("limtype", i)).compare("periodic")==0) limits.push_back(lim_periodic);
+		if ((o->getstringval("limtype", i)).compare("gaussian")==0) limits.push_back(lim_gaussian);
 		
+				
 		//Pick some starting values
 		p = startMean.back()+startDev.back()*ransource.getnum();
 		data.push_back((uint32_t)((p-rangeStart.back())/dRange.back()));
@@ -79,8 +83,14 @@ void chain::step() {
 		p = (int64_t)top[i];
 		dp = (int64_t)(ransource.getnum() * (double)stepSize[i]);
 		np = p + dp;
-		if (np<0) np=-np;
-		if (np>lintmax) np=2L*(int64_t)lintmax-np;
+		if (limits[i]==lim_flat) {
+			if (np<0) np=-np;
+			if (np>lintmax) np=2L*(int64_t)lintmax-np;
+		}
+		if (limits[i]==lim_periodic) {
+			if (np<0) np+=(int64_t)lintmax;
+			if (np>lintmax) np-=(int64_t)lintmax;
+		}
 		buffer[i] = (uint32_t)np;
 	}
 }

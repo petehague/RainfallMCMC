@@ -13,6 +13,7 @@
 	addval("upperlimit", 0, opt_noveto, opt_emptyarray); \
 	addval("stepsize", 0, opt_noveto, opt_emptyarray); \
 	addval("startmean", 0, opt_noveto, opt_emptyarray); \
-	addval("startdev", 0, opt_noveto, opt_emptyarray);
+	addval("startdev", 0, opt_noveto, opt_emptyarray); \
+	addval("limtype", "flat", opt_noveto, opt_emptyarray);
 
 #endif
