@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
 	midpoint = chrono::system_clock::now();
 	
 	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
-		if (i%1000 == 0) cout << i << " ";
+		if (i%1000 == 0) cout << i << endl;
 		c.step();	
 		c.current(newmodel);
 		newlikelihood = 0;
