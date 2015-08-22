@@ -25,28 +25,28 @@ public:
 	blob () {
 		startpoint = chrono::system_clock::now();
 		ransource.initialise(startpoint.time_since_epoch().count()+1000);
-		meanx=0.3+ransource.flatnum()*0.2;
-		meany=0.3+ransource.flatnum()*0.2;
-		width=0.01+ransource.flatnum()*0.1;
-		asp=1.0+ransource.flatnum()*2.0;
-		angle=ransource.flatnum()*pi;
+		meanx=0.3+ransource.getFlat()*0.2;
+		meany=0.3+ransource.getFlat()*0.2;
+		width=0.01+ransource.getFlat()*0.1;
+		asp=1.0+ransource.getFlat()*2.0;
+		angle=ransource.getFlat()*pi;
 		std::cout << "Created blob: Mean=" << meanx << "," << meany << " Width=" << width
 			 << " Aspect ratio=" << asp << " Angle=" << angle << std::endl;
 	}
-	
+
 	void setup(options *o) {
 		nparam=(int)o->getdoubleval("Nparams");
 	}
-	
+
 	double eval(double *model) {
 		double x, y, result=1;
-		
+
 		x = (model[0]-meanx)*cos(angle) + (model[1]-meany)*sin(angle);
 		y = (model[1]-meany)*cos(angle) - (model[0]-meanx)*sin(angle);
-		
+
 		result*=exp(-(x*x)/(width*width));
 		result*=exp(-(y*y)/(width*width*asp*asp));
-		
+
 		return result;
 	}
 };

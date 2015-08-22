@@ -6,47 +6,50 @@
 #include <iostream>
 #include <chrono>
 #include <random>
+#include <climits>
+#include <cmath>
 
 #include "include/pick.hpp"
 
 using namespace std;
 
-const double pii=6.283185, lmaxresip=1/4294967295.0, lnlmaxresip=-22.1807097777;
+constexpr double oneOverLmax=1/ULONG_MAX;
+double logOneOverLmax=log(1/ULONG_MAX);//-22.1807097777;
 
 generator::generator(unsigned x){
-	unsigned seed = chrono::system_clock::now().time_since_epoch().count()*x;
-	unsigned burn;
-	g1.seed(seed);
-	lnum=0;
-	for (int burnum=0; burnum < 100000; burnum++){
-		burn = g1();
-  	}
+  initialise(x);
 }
 
-double generator::flatnum() {
-	return (double)g1()*lmaxresip;
+double generator::getFlat() {
+	return (double)mersenneEngine()*oneOverLmax;
 }
 
-double generator::getnum(){
-	double use,piiv,rootv;
-	lnum=1-lnum;
-	if ( lnum == 0) return store;
- 
-	piiv=pii*(g1()*lnlmaxresip);
- 	rootv = (sqrt(-2*(log(g1())+lnlmaxresip)));
-  	use = cos(piiv)*rootv;
-  	store = sin(piiv)*rootv;
+double generator::getNorm(){
+	double theta,r;
+	numFlag=1-numFlag;
+	if ( numFlag == 0) return ranStore;
 
-	return use;
+	theta=2.0*M_PI*(mersenneEngine()*oneOverLmax);
+ 	r = (sqrt(-2*(log(mersenneEngine())+logOneOverLmax)));
+  ranStore = sin(theta)*r;
+
+	return cos(theta)*r;
 }
 
-void generator::getblock(double *output, int n){
-	double use,piiv,rootv;
-	for(int i=0; i < n; i+=2) {
-		piiv=pii*(g1()*lmaxresip);
-		rootv = (sqrt(-2*(log(g1())+lnlmaxresip)));
-		output[i] = cos(piiv)*rootv;
-		output[i+1] = sin(piiv)*rootv;
+void generator::getNormBlock(double *output, int n){
+	double theta, r;
+
+  //Stop the loop overrunning if an odd number of random numbers is requested
+  if (n%2==1) {
+		n--;
+		output[n] = getNorm();
+	}
+
+	for(int i=0;i<n;i+=2) {
+		theta=2.0*M_PI*(mersenneEngine()*oneOverLmax);
+		r = (sqrt(-2*(log(mersenneEngine())+logOneOverLmax)));
+		output[i] = cos(theta)*r;
+		output[i+1] = sin(theta)*r;
 	}
 }
 
@@ -57,10 +60,11 @@ generator::generator(){
 void generator::initialise(unsigned x){
 	unsigned seed = chrono::system_clock::now().time_since_epoch().count()*x;
 	unsigned burn;
-	g1.seed(seed);
-	lnum=0;
-	for (int burnum=0; burnum < 100000; burnum++){
-		burn =g1();
-	}
-}
 
+	mersenneEngine.seed(seed);
+	for (int i=0;i<100000;i++){
+		burn = mersenneEngine();
+	}
+
+	numFlag = 0;
+}

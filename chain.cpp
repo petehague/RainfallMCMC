@@ -14,9 +14,9 @@ chain::chain() {
 void chain::init(options *o) {
 	double p;
 	int i;
-	
+
 	ransource.initialise(1);
-	
+
 	width = o->getdoubleval("nparams");
 	for (i=0;i<width;i++) {
 		//Get parameters from options object
@@ -28,13 +28,13 @@ void chain::init(options *o) {
 		if ((o->getstringval("limtype", i)).compare("flat")==0) limits.push_back(lim_flat);
 		if ((o->getstringval("limtype", i)).compare("periodic")==0) limits.push_back(lim_periodic);
 		if ((o->getstringval("limtype", i)).compare("gaussian")==0) limits.push_back(lim_gaussian);
-		
-				
+
+
 		//Pick some starting values
-		p = startMean.back()+startDev.back()*ransource.getnum();
+		p = startMean.back()+startDev.back()*ransource.getNorm();
 		data.push_back((uint32_t)((p-rangeStart.back())/dRange.back()));
 		buffer.push_back(data[i]);
-		
+
 		//std::cout << "Parameter " << o->getstringval("paramname", i) << ": " << rangeStart[i] << "+n*" << dRange[i] << std::endl;
 	}
 }
@@ -79,9 +79,9 @@ void chain::step() {
 	int64_t p, np, dp;
 	uint32_t top[width];
 	rawlast(top);
-	for(int i=0;i<width;i++) { 
+	for(int i=0;i<width;i++) {
 		p = (int64_t)top[i];
-		dp = (int64_t)(ransource.getnum() * (double)stepSize[i]);
+		dp = (int64_t)(ransource.getNorm() * (double)stepSize[i]);
 		np = p + dp;
 		if (limits[i]==lim_flat) {
 			if (np<0) np=-np;
@@ -96,7 +96,7 @@ void chain::step() {
 }
 
 void chain::makestep(double *newbuffer) {
-	for(int i=0;i<width;i++) { 
+	for(int i=0;i<width;i++) {
 		buffer[i] = newbuffer[i]/dRange[i]-rangeStart[i];
 	}
 }
@@ -127,6 +127,6 @@ void chain::pop() {
 	}
 }
 
-int chain::size() { 
+int chain::size() {
 	return data.size()/(double)width;
 }

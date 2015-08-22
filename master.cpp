@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
 			output << " " << newlikelihood;
 			oldlikelihood = newlikelihood;
 		} else {
-			if (ransource.flatnum()<(newlikelihood/oldlikelihood)) {
+			if (ransource.getFlat()<(newlikelihood/oldlikelihood)) {
 				output << " " << newlikelihood;
 				oldlikelihood = newlikelihood;
 			} else {
