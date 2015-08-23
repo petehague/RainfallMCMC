@@ -2,19 +2,19 @@
 	Gaussian number generator
 	Author: Ewan Ferguson
 	Created: 05/08/14
+	Modified by: Peter Hague 22/08/15
 */
+
 #include <iostream>
 #include <chrono>
 #include <random>
-#include <climits>
 #include <cmath>
 
 #include "include/pick.hpp"
 
 using namespace std;
 
-constexpr double oneOverLmax=1/ULONG_MAX;
-double logOneOverLmax=log(1/ULONG_MAX);//-22.1807097777;
+constexpr double oneOverLmax=1.0/4294967295.0;
 
 generator::generator(unsigned x){
   initialise(x);
@@ -30,7 +30,7 @@ double generator::getNorm(){
 	if ( numFlag == 0) return ranStore;
 
 	theta=2.0*M_PI*(mersenneEngine()*oneOverLmax);
- 	r = (sqrt(-2*(log(mersenneEngine())+logOneOverLmax)));
+ 	r = (sqrt(-2*(log(mersenneEngine())+log(oneOverLmax))));
   ranStore = sin(theta)*r;
 
 	return cos(theta)*r;
@@ -47,7 +47,7 @@ void generator::getNormBlock(double *output, int n){
 
 	for(int i=0;i<n;i+=2) {
 		theta=2.0*M_PI*(mersenneEngine()*oneOverLmax);
-		r = (sqrt(-2*(log(mersenneEngine())+logOneOverLmax)));
+		r = (sqrt(-2*(log(mersenneEngine())+log(oneOverLmax))));
 		output[i] = cos(theta)*r;
 		output[i+1] = sin(theta)*r;
 	}

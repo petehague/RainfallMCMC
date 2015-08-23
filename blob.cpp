@@ -14,8 +14,6 @@
 
 using namespace std;
 
-const double pi=3.14159265;
-
 class blob : public agent {
 	int nparam;
 	double meanx, meany, width, angle, asp;
@@ -29,7 +27,7 @@ public:
 		meany=0.3+ransource.getFlat()*0.2;
 		width=0.01+ransource.getFlat()*0.1;
 		asp=1.0+ransource.getFlat()*2.0;
-		angle=ransource.getFlat()*pi;
+		angle=ransource.getFlat()*M_PI;
 		std::cout << "Created blob: Mean=" << meanx << "," << meany << " Width=" << width
 			 << " Aspect ratio=" << asp << " Angle=" << angle << std::endl;
 	}
