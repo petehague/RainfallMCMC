@@ -40,11 +40,11 @@ void chain::init(options *o) {
 }
 
 void chain::setStep(uint16_t n, double value) {
-	stepSize[n] = (uint32_t)((value-rangeStart[n])/dRange[n]);
+	stepSize[n] = (uint32_t)(value/dRange[n]);
 }
 
 double chain::getStep(uint16_t n) {
-	return rangeStart[n]+(double)stepSize[n]*dRange[n];
+	return (double)stepSize[n]*dRange[n];
 }
 
 void chain::getModel(uint32_t index, double *output) {

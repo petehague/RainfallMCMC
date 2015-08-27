@@ -17,7 +17,7 @@ using namespace std;
 
 //------------------------------------------------
 
-class adaptive : public agent {	
+class adaptive : public agent {
 	uint16_t nparam;
 	uint32_t *model;
 	uint32_t *prevmodel;
@@ -30,7 +30,7 @@ public:
 	adaptive() {
 		std::cout << "Created adaptive step size" << std::endl;
 	}
-	
+
 	~adaptive() {
 		fstream outputfile;
 		outputfile.open(filename.c_str(), fstream::out);
@@ -42,7 +42,7 @@ public:
 		}
 		outputfile.close();
 	}
-	
+
 	void setup(options *o) {
 		target = 0.6;
 		lookback = 100;
@@ -64,21 +64,21 @@ public:
 		for (uint16_t i=0;i<nparam;i++) {
 			if (model[i]==prevmodel[i]) record[i][tick] = false; else record[i][tick] = true;
 		}
-			
+
 		tick++;
 		if (tick==lookback) {
 			tick=0;
 			for(uint16_t i=0;i<nparam;i++) {
 				double rate=0.0;
-				for(uint16_t j=0;j<nparam;j++) {
-					if (record[i][j]) rate+=1.0; 
+				for(uint16_t j=0;j<lookback;j++) {
+					if (record[i][j]) rate+=1.0;
 				}
 				rate/=(double)lookback;
 				c->setStep(i, c->getStep(i)*((target-rate)/target));
 				stepbuffer.push_back(c->getStep(i));
 			}
-		}	
-		
+		}
+
 		return 0;
 	}
 };
