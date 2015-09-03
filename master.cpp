@@ -1,7 +1,7 @@
 /*
-	Master control program
-	Author: Peter Hague
-	Created: 20/07/14
+    Master control program
+    Author: Peter Hague
+    Created: 20/07/14
 */
 #include <iostream>
 #include <fstream>
@@ -19,175 +19,183 @@
 using namespace std;
 
 enum errorType {
-	err_noerror,
-	err_nofile,
-	err_nospawn,
-	err_noclean
+    err_noerror,
+    err_nofile,
+    err_nospawn,
+    err_noclean
 };
 
 const char *error[] = {"", "File not found", "Spawner not found", "Cleaner not found"};
 
 int errMessage(errorType e) {
-	cout << error[e] << endl;
-	return 1;
+    cout << error[e] << endl;
+    return 1;
 }
 
 errorType pushAgent(string agentName, vector <void *> *fStack, vector<agent *> *aStack, vector<clean_agent *> *cStack, chain *c, options *o) {
     void *agentFile;
-	cout << "Loading " << agentName << endl;
-	agentFile = dlopen(agentName.c_str(), RTLD_LAZY);
-	if (!agentFile) return err_nofile;
+    cout << "Loading " << agentName << endl;
+    agentFile = dlopen(agentName.c_str(), RTLD_LAZY);
+    if (!agentFile) return err_nofile;
 
-	dlerror();
-	spawn_agent* agentSpawner = (spawn_agent*) dlsym(agentFile, "spawn");
-	if (dlerror()) return err_nospawn;
+    dlerror();
+    spawn_agent* agentSpawner = (spawn_agent*) dlsym(agentFile, "spawn");
+    if (dlerror()) return err_nospawn;
 
-	cStack->push_back((clean_agent*) dlsym(agentFile, "clean"));
-	if (dlerror()) return err_noclean;
+    cStack->push_back((clean_agent*) dlsym(agentFile, "clean"));
+    if (dlerror()) return err_noclean;
 
-	aStack->push_back(agentSpawner());
-	fStack->push_back(agentFile);
+    aStack->push_back(agentSpawner());
+    fStack->push_back(agentFile);
 
   return err_noerror;
 }
 
 int main(int argc, char **argv) {
-	vector<clean_agent *> cleanStack;
-	vector<agent *> agentStack;
-	vector<void *> fileStack;
-	options o;
-	chain c;
-	double *model;
-	double *newmodel;
-	int index = 0;
-	int is_parallel;
-	double oldlikelihood, newlikelihood;
-	generator ransource;
-	fstream output;
-	auto startpoint = chrono::system_clock::now();
-	chrono::system_clock::time_point midpoint;
-	double elapsed;
+    vector<clean_agent *> cleanStack;
+    vector<agent *> agentStack;
+    vector<void *> fileStack;
+    options o;
+    chain c;
+    double *model;
+    double *newmodel;
+    int index = 0;
+    int is_parallel;
+    double oldlikelihood, newlikelihood, ratio;
+    generator ransource;
+    fstream output;
+    auto startpoint = chrono::system_clock::now();
+    chrono::system_clock::time_point midpoint;
+    double elapsed;
 
 
-	o.parseCL(argc, argv);
+    o.parseCL(argc, argv);
 
-	if (!o.vetoCheck()) {
-		cout << "Could not process options" << endl;
-		return 1;
-	}
+    if (!o.vetoCheck()) {
+        cout << "Could not process options" << endl;
+        return 1;
+    }
 
-	o.report();
+    o.report();
 
     system(("mkdir "+o.getstringval("path")).c_str());
 
-	model = new double[(uint16_t)o.getdoubleval("nparams")];
-	newmodel = new double[(uint16_t)o.getdoubleval("nparams")];
+    model = new double[(uint16_t)o.getdoubleval("nparams")];
+    newmodel = new double[(uint16_t)o.getdoubleval("nparams")];
 
-	output.open(o.getstringval("path")+"/"+o.getstringval("outputfile"), fstream::out);
-	if (!output.is_open()) {
-		cout << "Can't open output file" << endl;
-		return 1;
-	}
+    output.open(o.getstringval("path")+"/"+o.getstringval("outputfile"), fstream::out);
+    if (!output.is_open()) {
+        cout << "Can't open output file" << endl;
+        return 1;
+    }
 
-	c.init(&o);
-	ransource.initialise(startpoint.time_since_epoch().count());
+    c.init(&o);
+    ransource.initialise(startpoint.time_since_epoch().count());
 
-	//Load in likelihood function
-	pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
+    //Load in likelihood function
+    pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
     (agentStack.back())->setup(&o);
 
-	//Load in all agents
-	if (o.getrank("Agent")!=opt_emptyarray) {
-		for (int i=0;i<o.keycount("Agent");i++) {
-    		errorType result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
-    		if (result!=err_noerror) return errMessage(result);
-    		(agentStack.back())->setup(&o);
-		}
-	}
+    //Load in adaptive step size agent
+    pushAgent(o.getstringval("adaptstep"), &fileStack, &agentStack, &cleanStack, &c, &o);
+    (agentStack.back())->setup(&o);
 
-	cout << "Running on " << num_threads() << " threads" << endl;
+    //Load in all agents
+    if (o.getrank("Agent")!=opt_emptyarray) {
+        for (int i=0;i<o.keycount("Agent");i++) {
+            errorType result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
+            if (result!=err_noerror) return errMessage(result);
+            (agentStack.back())->setup(&o);
+        }
+    }
 
-	if (num_threads()==1) is_parallel=0; else is_parallel=1;
+    cout << "Running on " << num_threads() << " threads" << endl;
 
-	oldlikelihood = 0;
-	c.last(model);
-	#pragma omp parallel reduction(+:oldlikelihood)
-	{
-		if (thread_num()>=is_parallel) oldlikelihood += agentStack[0]->eval(model);
-	}
-	output << " " << oldlikelihood;
+    if (num_threads()==1) is_parallel=0; else is_parallel=1;
 
-	midpoint = chrono::system_clock::now();
+    oldlikelihood = 0;
+    c.last(model);
+    #pragma omp parallel reduction(+:oldlikelihood)
+    {
+        if (thread_num()>=is_parallel) oldlikelihood += agentStack[0]->eval(model);
+    }
+    output << " " << oldlikelihood;
 
-	for(int i=0;i<o.getdoubleval("MaxModels");i++) {
-		if (i%1000 == 0) cout << i << endl;
-		c.step();
-		c.current(newmodel);
-		newlikelihood = 0;
-		#pragma omp parallel reduction(+:newlikelihood)
-		{
-			if (thread_num()==0) {
-				for(int agent_i=1;agent_i<agentStack.size(); agent_i++) {
-					agentStack[agent_i]->invoke(&c, &o);
-				}
+    midpoint = chrono::system_clock::now();
 
-				c.last(model);
+    for(int i=0;i<o.getdoubleval("MaxModels");i++) {
+        if (i%1000 == 0) cout << i << endl;
+        agentStack[1]->invoke(&c, &o);     //Update the step size if necessary.
+        c.step();
+        c.current(newmodel);
+        newlikelihood = 0;
+        ratio = 0;
+        #pragma omp parallel reduction(+:newlikelihood)
+        {
+            if (thread_num()==0) {
+                for(int agent_i=2;agent_i<agentStack.size(); agent_i++) {
+                    agentStack[agent_i]->invoke(&c, &o);
+                }
 
-				for(int j=0;j<o.getdoubleval("nparams");j++) {
-					output << " " << model[j];
-				}
-				output << endl;
-			}
+                c.last(model);
 
-			if (thread_num()>=is_parallel) {
-				newlikelihood += agentStack[0]->eval(newmodel);
-			}
-		}
+                for(int j=0;j<o.getdoubleval("nparams");j++) {
+                    output << " " << model[j];
+                }
+                output << endl;
+            }
 
-		c.push();
+            if (thread_num()>=is_parallel) {
+                newlikelihood += agentStack[0]->eval(newmodel);
+                ratio += agentStack[0]->evalratio(model, newmodel);
+            }
+        }
 
-		if (newlikelihood>oldlikelihood) {
-			output << " " << newlikelihood;
-			oldlikelihood = newlikelihood;
-		} else {
-			if (ransource.getFlat()<(newlikelihood/oldlikelihood)) {
-				output << " " << newlikelihood;
-				oldlikelihood = newlikelihood;
-			} else {
-				c.pop();
-				c.repeat();
-				output << " " << oldlikelihood;
-			}
-		}
-	}
-	cout << endl;
+        c.push();
 
-	c.last(model);
-	for(int j=0;j<o.getdoubleval("nparams");j++) {
-		output << " " << model[j];
-	}
+        //Test
+        if (ratio>1) {
+            output << " " << newlikelihood;
+            oldlikelihood = newlikelihood;
+        } else {
+            if (ransource.getFlat()<ratio) {
+                output << " " << newlikelihood;
+                oldlikelihood = newlikelihood;
+            } else {
+                c.pop();
+                c.repeat();
+                output << " " << oldlikelihood;
+            }
+        }
+    }
+    cout << endl;
 
-	cout << "Unloading " << cleanStack.size() << " agents..." << endl;
+    c.last(model);
+    for(int j=0;j<o.getdoubleval("nparams");j++) {
+        output << " " << model[j];
+    }
 
-	//Unload all agents
-	for(int agent_i=0; agent_i<cleanStack.size(); agent_i++) {
-		cleanStack[agent_i](agentStack[agent_i]);
-		dlclose(fileStack[agent_i]);
-	}
+    cout << "Unloading " << cleanStack.size() << " agents..." << endl;
 
-	output.close();
+    //Unload all agents
+    for(int agent_i=0; agent_i<cleanStack.size(); agent_i++) {
+        cleanStack[agent_i](agentStack[agent_i]);
+        dlclose(fileStack[agent_i]);
+    }
 
-	elapsed = (double)(std::chrono::duration_cast<std::chrono::milliseconds>(chrono::system_clock::now()-startpoint).count() )/1000.0;
+    output.close();
 
-	cout << "Time elapsed: " << elapsed << " seconds." << endl;
+    elapsed = (double)(std::chrono::duration_cast<std::chrono::milliseconds>(chrono::system_clock::now()-startpoint).count() )/1000.0;
 
-	elapsed = (double)(std::chrono::duration_cast<std::chrono::milliseconds>(chrono::system_clock::now()-midpoint).count() )/1000.0;
+    cout << "Time elapsed: " << elapsed << " seconds." << endl;
 
-	cout << "Chain time: " << elapsed << " seconds." << endl;
-	if (elapsed/o.getdoubleval("MaxModels")>1.0) {
-		cout << "Time per model: " << elapsed/o.getdoubleval("MaxModels") << " seconds." << endl;
-	} else {
-		cout << "Time per model: " << (elapsed/o.getdoubleval("MaxModels"))*1000.0 << " milliseconds." << endl;
-	}
+    elapsed = (double)(std::chrono::duration_cast<std::chrono::milliseconds>(chrono::system_clock::now()-midpoint).count() )/1000.0;
+
+    cout << "Chain time: " << elapsed << " seconds." << endl;
+    if (elapsed/o.getdoubleval("MaxModels")>1.0) {
+        cout << "Time per model: " << elapsed/o.getdoubleval("MaxModels") << " seconds." << endl;
+    } else {
+        cout << "Time per model: " << (elapsed/o.getdoubleval("MaxModels"))*1000.0 << " milliseconds." << endl;
+    }
 
 }

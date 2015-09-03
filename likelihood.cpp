@@ -1,7 +1,7 @@
 /*
-	Likelihood Template
-	Author: Peter Hague
-	Created: 22/07/14
+    Likelihood Template
+    Author: Peter Hague
+    Created: 22/07/14
 */
 #include <iostream>
 
@@ -11,18 +11,23 @@ using namespace std;
 
 class likelihood : public agent {
 public:
-	likelihood () {
-		std::cout << "Created object" << std::endl; //Report the name of the module
-	}
-	
-	void setup(options *o) {
-		//Run at the beginning of the chain
-	}
-	
-	double eval(double *model) {
-		//Return the likelihood of "model"
-		return 0;
-	}
+    likelihood () {
+        std::cout << "Created object" << std::endl; //Report the name of the module
+    }
+
+    void setup(options *o) {
+        //Run at the beginning of the chain
+    }
+
+    double eval(double *model) {
+        //Return the likelihood of "model"
+        return 0;
+    }
+
+    double evalratio(double *model, double *newmodel) {
+        //Return the ratio of the likelihood of the new model to that of the current model
+        return 0;
+    }
 };
 
 REGISTERAGENT(likelihood)
