@@ -146,17 +146,17 @@ int main(int argc, char **argv) {
 
 		c.push();
 
-		if (newlikelihood>oldlikelihood) {
-			output << " " << newlikelihood;
+		if (newlikelihood<oldlikelihood) {
+			output << " " << exp(-newlikelihood);
 			oldlikelihood = newlikelihood;
 		} else {
-			if (ransource.getFlat()<(newlikelihood/oldlikelihood)) {
-				output << " " << newlikelihood;
+			if (ransource.getFlat()<exp(oldlikelihood-newlikelihood)) {
+				output << " " << exp(-newlikelihood);
 				oldlikelihood = newlikelihood;
 			} else {
 				c.pop();
 				c.repeat();
-				output << " " << oldlikelihood;
+				output << " " << exp(-oldlikelihood);
 			}
 		}
 	}
