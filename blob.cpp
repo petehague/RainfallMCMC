@@ -1,7 +1,7 @@
 /*
-	Blob likelihood function
-	Authors: Ewan Ferguson, Peter Hague
-	Created: 01/09/14
+    Blob likelihood function
+    Authors: Ewan Ferguson, Peter Hague
+    Created: 01/09/14
 */
 #include <iostream>
 #include <chrono>
@@ -15,10 +15,10 @@
 using namespace std;
 
 class blob : public agent {
-	int nparam;
-	double meanx, meany, width, angle, asp;
-	generator ransource;
-	chrono::system_clock::time_point startpoint;
+    int nparam;
+    double meanx, meany, width, angle, asp;
+    generator ransource;
+    chrono::system_clock::time_point startpoint;
 public:
 	blob () {
 		startpoint = chrono::system_clock::now();
@@ -37,13 +37,13 @@ public:
 	}
 
 	double eval(double *model) {
-		double x, y, result=1;
+		double x, y, result=0;
 
 		x = (model[0]-meanx)*cos(angle) + (model[1]-meany)*sin(angle);
 		y = (model[1]-meany)*cos(angle) - (model[0]-meanx)*sin(angle);
 
-		result*=exp(-(x*x)/(width*width));
-		result*=exp(-(y*y)/(width*width*asp*asp));
+		result+=(x*x)/(width*width);
+		result+=(y*y)/(width*width*asp*asp);
 
 		return result;
 	}
