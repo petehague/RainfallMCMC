@@ -11,7 +11,7 @@ AGENTOPTS := -shared -ldl $(AGENTFILES)
 all: folders rainfall navigate mods
 	@echo Make complete
 
-mods: mod/likelihood.so mod/histogram.so mod/flat.so mod/blob.so mod/grid.so mod/adaptive.so
+mods: mod/likelihood.so mod/histogram.so mod/flat.so mod/blob.so mod/grid.so mod/adaptive.so mod/fixstep.so mod/rrburnin.so mod/bimodal2dgauss.so
 	@echo Modules complete
 
 rainfall: bin/master.o bin/chain.o bin/options.o bin/pick.o bin/ompswitch.o
@@ -85,3 +85,12 @@ mod/grid.so: grid.cpp $(AGENTFILES)
 
 mod/adaptive.so: adaptive.cpp $(AGENTFILES)
 	$(MYCPP) $(AGENTOPTS) adaptive.cpp -omod/adaptive.so
+
+mod/fixstep.so: fixstep.cpp $(AGENTFILES)
+	$(MYCPP) $(AGENTOPTS) fixstep.cpp -omod/fixstep.so
+
+mod/rrburnin.so: rrburnin.cpp $(AGENTFILES)
+	$(MYCPP) $(AGENTOPTS) rrburnin.cpp -omod/rrburnin.so
+
+mod/bimodal2dgauss.so: bimodal2dgauss.cpp $(AGENTFILES)
+	$(MYCPP) $(AGENTOPTS) bimodal2dgauss.cpp -omod/bimodal2dgauss.so
