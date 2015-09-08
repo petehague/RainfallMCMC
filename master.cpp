@@ -1,7 +1,7 @@
 /*
-	Master control program
-	Author: Peter Hague
-	Created: 20/07/14
+    Master control program
+    Author: Peter Hague
+    Created: 20/07/14
 */
 #include <iostream>
 #include <fstream>
@@ -19,81 +19,81 @@
 using namespace std;
 
 enum errorType {
-	err_noerror,
-	err_nofile,
-	err_nospawn,
-	err_noclean
+    err_noerror,
+    err_nofile,
+    err_nospawn,
+    err_noclean
 };
 
 const char *error[] = {"", "File not found", "Spawner not found", "Cleaner not found"};
 
 int errMessage(errorType e) {
-	cout << error[e] << endl;
-	return 1;
+    cout << error[e] << endl;
+    return 1;
 }
 
 errorType pushAgent(string agentName, vector <void *> *fStack, vector<agent *> *aStack, vector<clean_agent *> *cStack, chain *c, options *o) {
     void *agentFile;
-	cout << "Loading " << agentName << endl;
-	agentFile = dlopen(agentName.c_str(), RTLD_LAZY);
-	if (!agentFile) return err_nofile;
+    cout << "Loading " << agentName << endl;
+    agentFile = dlopen(agentName.c_str(), RTLD_LAZY);
+    if (!agentFile) return err_nofile;
 
-	dlerror();
-	spawn_agent* agentSpawner = (spawn_agent*) dlsym(agentFile, "spawn");
-	if (dlerror()) return err_nospawn;
+    dlerror();
+    spawn_agent* agentSpawner = (spawn_agent*) dlsym(agentFile, "spawn");
+    if (dlerror()) return err_nospawn;
 
-	cStack->push_back((clean_agent*) dlsym(agentFile, "clean"));
-	if (dlerror()) return err_noclean;
+    cStack->push_back((clean_agent*) dlsym(agentFile, "clean"));
+    if (dlerror()) return err_noclean;
 
-	aStack->push_back(agentSpawner());
-	fStack->push_back(agentFile);
+    aStack->push_back(agentSpawner());
+    fStack->push_back(agentFile);
 
   return err_noerror;
 }
 
 int main(int argc, char **argv) {
-	vector<clean_agent *> cleanStack;
-	vector<agent *> agentStack;
-	vector<void *> fileStack;
-	options o;
-	chain c;
-	double *model;
-	double *newmodel;
-	int index = 0;
-	int is_parallel;
-	double oldlikelihood, newlikelihood;
-	generator ransource;
-	fstream output;
-	auto startpoint = chrono::system_clock::now();
-	chrono::system_clock::time_point midpoint;
-	double elapsed;
+    vector<clean_agent *> cleanStack;
+    vector<agent *> agentStack;
+    vector<void *> fileStack;
+    options o;
+    chain c;
+    double *model;
+    double *newmodel;
+    int index = 0;
+    int is_parallel;
+    double oldlikelihood, newlikelihood, ratio;
+    generator ransource;
+    fstream output;
+    auto startpoint = chrono::system_clock::now();
+    chrono::system_clock::time_point midpoint;
+    double elapsed;
 
 
-	o.parseCL(argc, argv);
+    o.parseCL(argc, argv);
 
-	if (!o.vetoCheck()) {
-		cout << "Could not process options" << endl;
-		return 1;
-	}
+    if (!o.vetoCheck()) {
+        cout << "Could not process options" << endl;
+        return 1;
+    }
 
-	o.report();
+    o.report();
 
     system(("mkdir "+o.getstringval("path")).c_str());
 
-	model = new double[(uint16_t)o.getdoubleval("nparams")];
-	newmodel = new double[(uint16_t)o.getdoubleval("nparams")];
+    model = new double[(uint16_t)o.getdoubleval("nparams")];
+    newmodel = new double[(uint16_t)o.getdoubleval("nparams")];
 
-	output.open(o.getstringval("path")+"/"+o.getstringval("outputfile"), fstream::out);
-	if (!output.is_open()) {
-		cout << "Can't open output file" << endl;
-		return 1;
-	}
+    output.open(o.getstringval("path")+"/"+o.getstringval("outputfile"), fstream::out);
+    if (!output.is_open()) {
+        cout << "Can't open output file" << endl;
+        return 1;
+    }
 
-	c.init(&o);
-	ransource.initialise(startpoint.time_since_epoch().count());
+    c.init(&o);
+    ransource.initialise(startpoint.time_since_epoch().count());
 
-	//Load in likelihood function
-	pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
+    //Load in likelihood function
+    pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
     (agentStack.back())->setup(&o);
 
 	//Load in all agents
