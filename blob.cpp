@@ -37,27 +37,16 @@ public:
     }
 
     double eval(double *model) {
-        double x, y, result=1;
+        /*double x, y, result=1;*/
+        double x, y, result=0;
 
         x = (model[0]-meanx)*cos(angle) + (model[1]-meany)*sin(angle);
         y = (model[1]-meany)*cos(angle) - (model[0]-meanx)*sin(angle);
 
-        result*=exp(-(x*x)/(width*width));
-        result*=exp(-(y*y)/(width*width*asp*asp));
-
-        return result;
-    }
-
-    double evalratio(double *model, double *newmodel){
-        double x1, y1, x2, y2, result=1;
-
-        x1 = (model[0]-meanx)*cos(angle) + (model[1]-meany)*sin(angle);
-        y1 = (model[1]-meany)*cos(angle) - (model[0]-meanx)*sin(angle);
-        x2 = (newmodel[0]-meanx)*cos(angle) + (newmodel[1]-meany)*sin(angle);
-        y2 = (newmodel[1]-meany)*cos(angle) - (newmodel[0]-meanx)*sin(angle);
-
-        result*=exp((x1*x1-x2*x2)/(width*width));
-        result*=exp((y1*y1-y2*y2)/(width*width*asp*asp));
+        /*result*=exp(-(x*x)/(width*width));
+        result*=exp(-(y*y)/(width*width*asp*asp));*/
+        result+=(x*x)/(width*width);
+        result+=(y*y)/(width*width*asp*asp);
 
         return result;
     }

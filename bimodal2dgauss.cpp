@@ -51,16 +51,9 @@ public:
         g1 *= exp(-(y-meany1)*(y-meany1)/(2*sigy1*sigy1));
         g2 *= exp(-(x-meanx2)*(x-meanx2)/(2*sigx2*sigx2));
         g2 *= exp(-(y-meany2)*(y-meany2)/(2*sigy2*sigy2));
-        result = g1 + g2;
+        result = -1*log(g1+g2);
 
         return result;
-    }
-
-    double evalratio(double *model, double *newmodel) {
-        double G1, G2;
-        G1 = bimodal2dgauss::eval(model);
-        G2 = bimodal2dgauss::eval(newmodel);
-        return G2/G1;
     }
 };
 

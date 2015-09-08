@@ -23,11 +23,6 @@ public:
         //Return the likelihood of "model"
         return 0;
     }
-
-    double evalratio(double *model, double *newmodel) {
-        //Return the ratio of the likelihood of the new model to that of the current model
-        return 0;
-    }
 };
 
 REGISTERAGENT(likelihood)

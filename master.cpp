@@ -147,24 +147,22 @@ int main(int argc, char **argv) {
 
             if (thread_num()>=is_parallel) {
                 newlikelihood += agentStack[0]->eval(newmodel);
-                ratio += agentStack[0]->evalratio(model, newmodel);
             }
         }
 
         c.push();
 
-        //Test
-        if (ratio>1) {
-            output << " " << newlikelihood;
+        if (newlikelihood<oldlikelihood) {
+            output << " " << exp(-newlikelihood);
             oldlikelihood = newlikelihood;
         } else {
-            if (ransource.getFlat()<ratio) {
-                output << " " << newlikelihood;
+            if (ransource.getFlat()<exp(oldlikelihood-newlikelihood)) {
+                output << " " << exp(-newlikelihood);
                 oldlikelihood = newlikelihood;
             } else {
                 c.pop();
                 c.repeat();
-                output << " " << oldlikelihood;
+                output << " " << exp(-oldlikelihood);
             }
         }
     }
