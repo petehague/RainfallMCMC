@@ -42,8 +42,8 @@ public:
 		x = (model[0]-meanx)*cos(angle) + (model[1]-meany)*sin(angle);
 		y = (model[1]-meany)*cos(angle) - (model[0]-meanx)*sin(angle);
 
-		result+=(x*x)/(width*width));
-		result+=(y*y)/(width*width*asp*asp));
+		result+=(x*x)/(width*width);
+		result+=(y*y)/(width*width*asp*asp);
 
 		return result;
 	}
