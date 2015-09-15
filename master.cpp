@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
     {
         if (thread_num()>=is_parallel) oldlikelihood += agentStack[0]->eval(model);
     }
-    output << " " << oldlikelihood;
+    output << " " << exp(-oldlikelihood);
 
     midpoint = chrono::system_clock::now();
 
