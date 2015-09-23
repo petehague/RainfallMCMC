@@ -92,7 +92,10 @@ public:
         if (c->size()>=2 & c->size()<=burnin) {
             c->rawlast(model);
             c->getRawModel(c->size()-2, prevmodel);
-            if (model[0]==prevmodel[0]) accepted[tick] = false; else accepted[tick] = true;
+            accepted[tick] = false;
+            for(uint16_t i=0; i<nparam && accepted[tick]==false; i++){
+              if (model[i]!=prevmodel[i]) accepted[tick] = true;
+            }
             tick++;
             if (tick==lookback) {
                 tick = 0;
