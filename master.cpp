@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
     {
         if (thread_num()>=is_parallel) oldlikelihood += agentStack[0]->eval(model);
     }
-    output << " " << exp(-oldlikelihood);
+    output << " " << oldlikelihood;
 
     midpoint = chrono::system_clock::now();
 
@@ -155,16 +155,16 @@ int main(int argc, char **argv) {
         c.push();
 
         if (newlikelihood<oldlikelihood) {
-            output << " " << exp(-newlikelihood);
+            output << " " << newlikelihood;
             oldlikelihood = newlikelihood;
         } else {
             if (ransource.getFlat()<exp(oldlikelihood-newlikelihood)) {
-                output << " " << exp(-newlikelihood);
+                output << " " << newlikelihood;
                 oldlikelihood = newlikelihood;
             } else {
                 c.pop();
                 c.repeat();
-                output << " " << exp(-oldlikelihood);
+                output << " " << oldlikelihood;
             }
         }
     }
