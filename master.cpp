@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
     auto startpoint = chrono::system_clock::now();
     chrono::system_clock::time_point midpoint;
     double elapsed;
+    errorType result;
 
 
     o.parseCL(argc, argv);
@@ -93,17 +94,19 @@ int main(int argc, char **argv) {
     ransource.initialise(startpoint.time_since_epoch().count());
 
     //Load in likelihood function
-    pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
+    result = pushAgent(o.getstringval("Likelihood"), &fileStack, &agentStack, &cleanStack, &c, &o);
+    if (result!=err_noerror) return errMessage(result);
     (agentStack.back())->setup(&o);
 
     //Load in adaptive step size agent
-    pushAgent(o.getstringval("adaptstep"), &fileStack, &agentStack, &cleanStack, &c, &o);
+    result = pushAgent(o.getstringval("adaptstep"), &fileStack, &agentStack, &cleanStack, &c, &o);
+    if (result!=err_noerror) return errMessage(result);
     (agentStack.back())->setup(&o);
 
     //Load in all agents
     if (o.getrank("Agent")!=opt_emptyarray) {
         for (int i=0;i<o.keycount("Agent");i++) {
-            errorType result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
+            result = pushAgent(o.getstringval("Agent", i), &fileStack, &agentStack, &cleanStack, &c, &o);
             if (result!=err_noerror) return errMessage(result);
             (agentStack.back())->setup(&o);
         }
@@ -152,16 +155,16 @@ int main(int argc, char **argv) {
         c.push();
 
         if (newlikelihood<oldlikelihood) {
-            output << " " << exp(-newlikelihood);
+            output << " " << newlikelihood;
             oldlikelihood = newlikelihood;
         } else {
             if (ransource.getFlat()<exp(oldlikelihood-newlikelihood)) {
-                output << " " << exp(-newlikelihood);
+                output << " " << newlikelihood;
                 oldlikelihood = newlikelihood;
             } else {
                 c.pop();
                 c.repeat();
-                output << " " << exp(-oldlikelihood);
+                output << " " << oldlikelihood;
             }
         }
     }
