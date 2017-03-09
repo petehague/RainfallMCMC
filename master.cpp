@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
     chrono::system_clock::time_point midpoint;
     double elapsed;
     errorType result;
+    uint32_t checkpoint;
 
 
     o.parseCL(argc, argv);
@@ -124,10 +125,12 @@ int main(int argc, char **argv) {
     }
     output << " " << oldlikelihood;
 
+    checkpoint = o.getdoubleval("MaxModels")/10.0;
+
     midpoint = chrono::system_clock::now();
 
     for(int i=0;i<o.getdoubleval("MaxModels");i++) {
-        if (i%1000 == 0) cout << i << endl;
+        if (i%checkpoint == 0) cout << i << endl;
         agentStack[1]->invoke(&c, &o);     //Update the step size if necessary.
         c.step();
         c.current(newmodel);
